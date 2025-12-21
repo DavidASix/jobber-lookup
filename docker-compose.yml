@@ -1,0 +1,29 @@
+services:
+  db:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=jobber
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    restart: always
+  app:
+    build:
+      context: .
+    command: npm run dev
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=development
+      - PORT=3000
+      - DATABASE_URL=postgres://postgres:${POSTGRES_PASSWORD}@db:5432/jobber
+      - ACCESS_CODE=${AUTH_SECRET}
+    volumes:
+      - .:/app # Mount current directory to /app in container
+    depends_on:
+      - db
+volumes:
+  db_data:
