@@ -17,8 +17,10 @@ export default function Home() {
       <div className="flex h-screen w-screen flex-col">
         <Header showSignOut={false} />
         <div className="flex flex-1 flex-col items-center justify-center gap-8">
-          <h1 className="text-foreground text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Jobber Quote Lookup Tool
+          <h1 className="text-foreground text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+            Jobber Quote
+            <br />
+            Lookup Tool
           </h1>
           <p className="text-muted-foreground max-w-md text-center text-xl">
             Sign in to access your personalized dashboard
