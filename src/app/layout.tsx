@@ -6,6 +6,7 @@ import { Geist } from "next/font/google";
 import { SessionProvider } from "next-auth/react";
 
 import { TRPCReactProvider } from "~/trpc/react";
+import { ThemeProvider } from "~/components/theme/theme-provider";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -16,15 +17,22 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
+    <html lang="en" suppressHydrationWarning className={`${geist.variable}`}>
       <body>
-        <TRPCReactProvider>
-          <SessionProvider>
-            <main className="flex h-screen w-screen flex-col items-center justify-center">
-              {children}
-            </main>
-          </SessionProvider>
-        </TRPCReactProvider>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <TRPCReactProvider>
+            <SessionProvider>
+              <main className="flex h-screen w-screen flex-col items-center justify-center">
+                {children}
+              </main>
+            </SessionProvider>
+          </TRPCReactProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
