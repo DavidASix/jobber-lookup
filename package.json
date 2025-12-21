@@ -5,19 +5,18 @@
   "type": "module",
   "scripts": {
     "build": "next build",
-    "check": "next lint && tsc --noEmit",
+    "dev": "next dev --turbo",
+    "start": "next start",
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
-    "dev": "next dev --turbo",
-    "format:check": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "check": "next lint && tsc --noEmit",
+    "check:format": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
+    "check:lint": "next lint",
+    "check:types": "tsc --noEmit",
     "format": "prettier --write \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
-    "lint": "next lint",
-    "lint:fix": "next lint --fix",
-    "preview": "next build && next start",
-    "start": "next start",
-    "typecheck": "tsc --noEmit"
+    "lint:fix": "next lint --fix"
   },
   "dependencies": {
     "@auth/drizzle-adapter": "^1.7.2",
