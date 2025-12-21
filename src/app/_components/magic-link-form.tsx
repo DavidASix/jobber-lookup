@@ -55,17 +55,17 @@ export function MagicLinkForm() {
   };
 
   return (
-    <Card className="w-full max-w-md border-white/10 bg-white/5">
+    <Card className="border-border bg-card w-full max-w-md">
       <CardHeader>
-        <CardTitle className="text-2xl text-white">Sign In</CardTitle>
-        <CardDescription className="text-white/70">
+        <CardTitle className="text-card-foreground text-2xl">Sign In</CardTitle>
+        <CardDescription className="text-muted-foreground">
           Enter your email to receive a magic link
         </CardDescription>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="email" className="text-white/90">
+            <Label htmlFor="email" className="text-foreground">
               Email Address
             </Label>
             <Input
@@ -76,18 +76,13 @@ export function MagicLinkForm() {
               onChange={(e) => setEmail(e.target.value)}
               required
               disabled={isPending}
-              className="bg-white/10 text-white placeholder:text-white/40 border-white/20"
+              className="bg-input text-foreground placeholder:text-muted-foreground border-input"
             />
           </div>
 
           {status.type !== "idle" && (
             <Alert
               variant={status.type === "error" ? "destructive" : "default"}
-              className={
-                status.type === "error"
-                  ? "bg-red-500/10 border-red-500/20 text-red-200"
-                  : "bg-green-500/10 border-green-500/20 text-green-200"
-              }
             >
               <AlertDescription>{status.message}</AlertDescription>
             </Alert>
