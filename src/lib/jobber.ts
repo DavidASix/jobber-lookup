@@ -1,12 +1,16 @@
 import { z } from "zod";
 import {
+  accountResponseSchema,
   clientEmailsResponseSchema,
   invoicesSchema,
   quotesSchema,
+  type Account,
   type Client,
   type Invoice,
   type Quote,
 } from "~/types/jobber";
+import { db } from "~/server/db";
+import { jobberAccounts } from "~/server/db/schema/jobber";
 
 /**
  * Functions to interact with Jobber API
@@ -204,4 +208,72 @@ export async function fetchQuotes(
   const result = quotesResponseSchema.parse(data);
 
   return result.data.client.quotes.nodes;
+}
+
+/**
+ * Fetch account data from Jobber and save it to the database
+ */
+export async function accountData(
+  userId: string,
+  token: string,
+): Promise<Account> {
+  const query = `
+    query AccountQuery {
+      account {
+        id
+        name
+        signupName
+        industry
+        phone
+      }
+    }
+  `;
+
+  const response = await fetch("https://api.getjobber.com/api/graphql", {
+    method: "POST",
+    headers: createJobberHeaders(token),
+    body: JSON.stringify({ query }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch account data: ${response.statusText}`);
+  }
+
+  const data: unknown = await response.json();
+  const result = accountResponseSchema.parse(data);
+
+  const account = result.data.account;
+
+  // Handle "Empty" signupName
+  let signupName = account.signupName;
+  signupName = signupName === "Empty" ? null : signupName;
+
+  // Insert or update account data in database
+  const [accountRecord] = await db
+    .insert(jobberAccounts)
+    .values({
+      user_id: userId,
+      jobber_id: account.id,
+      name: account.name,
+      signupName: signupName,
+      industry: account.industry,
+      phone: account.phone,
+    })
+    .onConflictDoUpdate({
+      target: jobberAccounts.user_id,
+      set: {
+        jobber_id: account.id,
+        name: account.name,
+        signupName: signupName,
+        industry: account.industry,
+        phone: account.phone,
+      },
+    })
+    .returning();
+
+  if (!accountRecord) {
+    throw new Error("Failed to save account data to database");
+  }
+
+  return account;
 }
