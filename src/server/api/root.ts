@@ -1,4 +1,3 @@
-import { tempRouter } from "~/server/api/routers/temp";
 import { jobberRouter } from "~/server/api/routers/jobber";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
@@ -8,7 +7,6 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  temp: tempRouter,
   jobber: jobberRouter,
 });
 
