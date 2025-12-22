@@ -95,7 +95,7 @@ export async function GET(request: NextRequest) {
       react: lookupEmail,
     });
 
-    if (!error) {
+    if (error) {
       return NextResponse.json(
         { error: "Could not send email" },
         { status: 500, headers: CORS_HEADERS },
