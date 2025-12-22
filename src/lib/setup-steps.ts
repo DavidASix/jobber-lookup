@@ -7,7 +7,7 @@ import { eq, and } from "drizzle-orm";
  */
 export async function insertStep(user_id: string, step: number) {
   // Check if a record already exists for this user and step
-  const existing = await db.query.setup_step.findFirst({
+  const existing = await db.query.setupSteps.findFirst({
     where: and(eq(setupSteps.user_id, user_id), eq(setupSteps.step, step)),
   });
 

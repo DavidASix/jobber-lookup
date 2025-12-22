@@ -26,7 +26,7 @@ export const jobberRouter = createTRPCRouter({
   getAccountData: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
 
-    const account = await db.query.jobber_account.findFirst({
+    const account = await db.query.jobberAccounts.findFirst({
       where: eq(jobberAccounts.user_id, user_id),
     });
 
