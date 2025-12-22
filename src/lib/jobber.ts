@@ -31,58 +31,63 @@ export async function findClientByEmail(
   email: string,
   token: string,
 ): Promise<Client | null> {
-  const query = `
-    query ClientQuery($email: String!) {
-      clientEmails(searchTerm: $email) {
-        nodes {
-          client {
-            id
-            createdAt
-            name
-            companyName
-            isCompany
+  try {
+    const query = `
+      query ClientQuery($email: String!) {
+        clientEmails(searchTerm: $email) {
+          nodes {
+            client {
+              id
+              createdAt
+              name
+              companyName
+              isCompany
+            }
           }
         }
       }
+    `;
+
+    const response = await fetch("https://api.getjobber.com/api/graphql", {
+      method: "POST",
+      headers: createJobberHeaders(token),
+      body: JSON.stringify({
+        query,
+        variables: { email },
+      }),
+    });
+
+    if (!response.ok) {
+      console.error("Failed to fetch clients:", response.statusText);
+      return null;
     }
-  `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
-    method: "POST",
-    headers: createJobberHeaders(token),
-    body: JSON.stringify({
-      query,
-      variables: { email },
-    }),
-  });
+    const data: unknown = await response.json();
+    const result = clientEmailsResponseSchema.parse(data);
 
-  if (!response.ok) {
-    console.error("Failed to fetch clients:", response.statusText);
+    const clients = result.data.clientEmails.nodes;
+
+    if (clients.length === 0) {
+      return null;
+    }
+
+    // Sort by createdAt and return the most recent
+    const sortedClients = clients.sort((a, b) => {
+      const dateA = new Date(a.client.createdAt);
+      const dateB = new Date(b.client.createdAt);
+      return dateB.getTime() - dateA.getTime();
+    });
+
+    const [mostRecentClient] = sortedClients;
+    if (!mostRecentClient) {
+      return null;
+    }
+
+    return mostRecentClient.client;
+  } catch (error) {
+    console.error("Error in findClientByEmail:", error);
     return null;
   }
-
-  const data: unknown = await response.json();
-  const result = clientEmailsResponseSchema.parse(data);
-
-  const clients = result.data.clientEmails.nodes;
-
-  if (clients.length === 0) {
-    return null;
-  }
-
-  // Sort by createdAt and return the most recent
-  const sortedClients = clients.sort((a, b) => {
-    const dateA = new Date(a.client.createdAt);
-    const dateB = new Date(b.client.createdAt);
-    return dateB.getTime() - dateA.getTime();
-  });
-
-  const [mostRecentClient] = sortedClients;
-  if (!mostRecentClient) {
-    return null;
-  }
-
-  return mostRecentClient.client;
 }
 
 /**
