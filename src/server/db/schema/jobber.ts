@@ -12,7 +12,7 @@ import { users } from "./auth";
 export const state_connections = pgTable("state_connections", {
   id: serial("id").primaryKey(),
   valid: boolean("valid").notNull().default(true),
-  state: text("state").notNull(),
+  state: text("state").notNull().unique(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -21,8 +21,8 @@ export const state_connections = pgTable("state_connections", {
 
 export const jobber_tokens = pgTable("jobber_tokens", {
   id: serial("id").primaryKey(),
-  access_token: text("access_token").notNull(),
-  refresh_token: text("refresh_token").notNull(),
+  access_token: text("access_token").notNull().unique(),
+  refresh_token: text("refresh_token").notNull().unique(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
@@ -31,7 +31,7 @@ export const jobber_tokens = pgTable("jobber_tokens", {
 
 export const jobber_account = pgTable("jobber_account", {
   id: serial("id").primaryKey(),
-  public_id: uuid("public_id").defaultRandom(),
+  public_id: uuid("public_id").defaultRandom().unique().notNull(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
