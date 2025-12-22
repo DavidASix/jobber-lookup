@@ -3,6 +3,7 @@ import { z } from "zod";
 import { eq } from "drizzle-orm";
 import { Resend } from "resend";
 
+import { env } from "~/env";
 import { db } from "~/server/db";
 import { jobber_account } from "~/server/db/schema/jobber";
 import { getJobberAccessToken } from "~/lib/jobber-tokens";
@@ -77,9 +78,9 @@ export async function GET(request: NextRequest) {
 
     console.log({ client, invoices, quotes });
 
-    const resend = new Resend(process.env.AUTH_RESEND_KEY);
+    const resend = new Resend(env.RESEND_API_KEY);
 
-    const mailerAddress = process.env.MAILER_ADDRESS;
+    const mailerAddress = env.MAILER_ADDRESS;
 
     const lookupEmail = await LookupEmail({
       businessName: account.name ?? "",
