@@ -213,7 +213,7 @@ export const LookupEmail: React.FC<Readonly<LookupEmail>> = ({
           </div>
         )}
 
-        {quotes.length === 0 && invoices.length === 0 && (
+        {filteredQuotes.length === 0 && filteredInvoices.length === 0 && (
           <p style={{ fontSize: "16px", color: "#666", fontStyle: "italic" }}>
             No quotes or invoices found.
           </p>
