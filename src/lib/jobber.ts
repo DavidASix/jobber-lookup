@@ -74,7 +74,7 @@ export async function findClientByEmail(
     return dateB.getTime() - dateA.getTime();
   });
 
-  const mostRecentClient = sortedClients[0];
+  const [mostRecentClient] = sortedClients;
   if (!mostRecentClient) {
     return null;
   }
