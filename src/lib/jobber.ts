@@ -32,8 +32,8 @@ export async function findClientByEmail(
   token: string,
 ): Promise<Client | null> {
   const query = `
-    query ClientQuery {
-      clientEmails(searchTerm: "${email}") {
+    query ClientQuery($email: String!) {
+      clientEmails(searchTerm: $email) {
         nodes {
           client {
             id
@@ -50,7 +50,10 @@ export async function findClientByEmail(
   const response = await fetch("https://api.getjobber.com/api/graphql", {
     method: "POST",
     headers: createJobberHeaders(token),
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({
+      query,
+      variables: { email },
+    }),
   });
 
   if (!response.ok) {
@@ -100,8 +103,8 @@ export async function fetchInvoices(
   });
 
   const query = `
-    query InvoiceQuery {
-      client(id: "${clientId}") {
+    query InvoiceQuery($clientId: ID!) {
+      client(id: $clientId) {
         invoices {
           nodes {
             id
@@ -124,7 +127,10 @@ export async function fetchInvoices(
   const response = await fetch("https://api.getjobber.com/api/graphql", {
     method: "POST",
     headers: createJobberHeaders(token),
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({
+      query,
+      variables: { clientId },
+    }),
   });
 
   if (!response.ok) {
@@ -156,8 +162,8 @@ export async function fetchQuotes(
   });
 
   const query = `
-    query QuoteQuery {
-      client(id: "${clientId}") {
+    query QuoteQuery($clientId: ID!) {
+      client(id: $clientId) {
         quotes {
           nodes {
             id
@@ -178,7 +184,10 @@ export async function fetchQuotes(
   const response = await fetch("https://api.getjobber.com/api/graphql", {
     method: "POST",
     headers: createJobberHeaders(token),
-    body: JSON.stringify({ query }),
+    body: JSON.stringify({
+      query,
+      variables: { clientId },
+    }),
   });
 
   if (!response.ok) {
