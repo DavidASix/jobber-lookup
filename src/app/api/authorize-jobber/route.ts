@@ -17,6 +17,20 @@ const oauthTokenSchema = z.object({
   refresh_token: z.string(),
 });
 
+/**
+ * OAuth callback endpoint for Jobber authorization
+ *
+ * This endpoint handles the OAuth 2.0 authorization code flow callback from Jobber. This is the callback endpoint that
+ * jobber redirects to after the user authorizes the application.
+ *
+ * It validates the state parameter, exchanges the authorization code jobber provided for access/refresh tokens,
+ * stores the tokens in the database, and updates the user's setup progress.
+ *
+ * @param request - Next.js request object containing code and state query parameters
+ * @returns Redirects to home page after processing (success or failure)
+ *
+ * @throws Will log errors but always redirect to home to prevent user from being stuck
+ */
 export async function GET(request: NextRequest) {
   try {
     const searchParams = Object.fromEntries(request.nextUrl.searchParams);
