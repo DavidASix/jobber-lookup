@@ -77,30 +77,30 @@ export async function GET(request: NextRequest) {
 
     console.log({ client, invoices, quotes });
 
-    // const resend = new Resend(process.env.AUTH_RESEND_KEY);
+    const resend = new Resend(process.env.AUTH_RESEND_KEY);
 
-    // const mailerAddress = process.env.MAILER_ADDRESS;
+    const mailerAddress = process.env.MAILER_ADDRESS;
 
-    // const lookupEmail = await LookupEmail({
-    //   businessName: account.name ?? "",
-    //   client,
-    //   invoices,
-    //   quotes,
-    // });
+    const lookupEmail = await LookupEmail({
+      businessName: account.name ?? "",
+      client,
+      invoices,
+      quotes,
+    });
 
-    // const { error } = await resend.emails.send({
-    //   from: `Jobber.Tools <${mailerAddress}>`,
-    //   to: [email],
-    //   subject: `Your ${account.name ? `${account.name} ` : ""}quotes & invoices`,
-    //   react: lookupEmail,
-    // });
+    const { error } = await resend.emails.send({
+      from: `Jobber.Tools <${mailerAddress}>`,
+      to: [email],
+      subject: `Your ${account.name ? `${account.name} ` : ""}quotes & invoices`,
+      react: lookupEmail,
+    });
 
-    // if (!error) {
-    //   return NextResponse.json(
-    //     { error: "Could not send email" },
-    //     { status: 500, headers: CORS_HEADERS },
-    //   );
-    // }
+    if (!error) {
+      return NextResponse.json(
+        { error: "Could not send email" },
+        { status: 500, headers: CORS_HEADERS },
+      );
+    }
 
     return NextResponse.json(
       { message: "Email sent!" },
