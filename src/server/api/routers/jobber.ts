@@ -1,5 +1,5 @@
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { state_connections, jobber_account } from "~/server/db/schema/jobber";
+import { authenticationState, jobberAccounts } from "~/server/db/schema/jobber";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
 
@@ -8,7 +8,7 @@ export const jobberRouter = createTRPCRouter({
     const { id: user_id } = ctx.session.user;
     const state = crypto.randomUUID();
 
-    await db.insert(state_connections).values({
+    await db.insert(authenticationState).values({
       state,
       user_id,
       valid: true,
@@ -27,7 +27,7 @@ export const jobberRouter = createTRPCRouter({
     const { id: user_id } = ctx.session.user;
 
     const account = await db.query.jobber_account.findFirst({
-      where: eq(jobber_account.user_id, user_id),
+      where: eq(jobberAccounts.user_id, user_id),
     });
 
     return account ?? null;

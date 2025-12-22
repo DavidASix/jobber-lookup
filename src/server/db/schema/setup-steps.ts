@@ -4,7 +4,7 @@ import { users } from "./auth";
 /**
  * Table to track the setup steps completed by users.
  */
-export const setup_step = pgTable("setup_step", {
+export const setupSteps = pgTable("setup_steps", {
   id: serial("id").primaryKey(),
   step: integer("step").notNull(),
   user_id: text("user_id")

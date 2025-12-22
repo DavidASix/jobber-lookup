@@ -1,5 +1,5 @@
 import { db } from "~/server/db";
-import { jobber_tokens } from "~/server/db/schema/jobber";
+import { jobberTokens } from "~/server/db/schema/jobber";
 import { eq, desc } from "drizzle-orm";
 import { env } from "~/env";
 import { tokenResponseSchema } from "~/types/jobber";
@@ -16,9 +16,9 @@ export async function getJobberAccessToken(
   // Get the most recent token for this user
   const [tokenRecord] = await db
     .select()
-    .from(jobber_tokens)
-    .where(eq(jobber_tokens.user_id, user_id))
-    .orderBy(desc(jobber_tokens.created_at));
+    .from(jobberTokens)
+    .where(eq(jobberTokens.user_id, user_id))
+    .orderBy(desc(jobberTokens.created_at));
 
   if (!tokenRecord) {
     console.error("No token found for user");
@@ -48,7 +48,7 @@ export async function getJobberAccessToken(
     const { access_token, refresh_token } = tokenResponseSchema.parse(data);
 
     // Store the new tokens
-    await db.insert(jobber_tokens).values({
+    await db.insert(jobberTokens).values({
       access_token,
       refresh_token,
       user_id,

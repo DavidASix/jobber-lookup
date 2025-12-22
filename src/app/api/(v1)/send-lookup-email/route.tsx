@@ -5,7 +5,7 @@ import { Resend } from "resend";
 
 import { env } from "~/env";
 import { db } from "~/server/db";
-import { jobber_account } from "~/server/db/schema/jobber";
+import { jobberAccounts } from "~/server/db/schema/jobber";
 import { getJobberAccessToken } from "~/lib/jobber-tokens";
 import { findClientByEmail, fetchInvoices, fetchQuotes } from "~/lib/jobber";
 import { LookupEmail } from "~/lib/emails/lookup-email";
@@ -42,8 +42,8 @@ export async function GET(request: NextRequest) {
     // Look up the jobber account
     const [account] = await db
       .select()
-      .from(jobber_account)
-      .where(eq(jobber_account.public_id, id));
+      .from(jobberAccounts)
+      .where(eq(jobberAccounts.public_id, id));
 
     if (!account) {
       return NextResponse.json(

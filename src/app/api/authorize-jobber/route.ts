@@ -3,7 +3,7 @@ import { z } from "zod";
 import { eq, and, sql } from "drizzle-orm";
 
 import { db } from "~/server/db";
-import { state_connections, jobber_tokens } from "~/server/db/schema/jobber";
+import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
 import { insertStep } from "~/lib/setup-steps";
 import { env } from "~/env";
 
@@ -39,12 +39,12 @@ export async function GET(request: NextRequest) {
     // Check if state is valid and not expired (1 hour window)
     const [stateInDb] = await db
       .select()
-      .from(state_connections)
+      .from(authenticationState)
       .where(
         and(
-          eq(state_connections.state, state),
-          eq(state_connections.valid, true),
-          sql`${state_connections.created_at} > NOW() - INTERVAL '1 hour'`,
+          eq(authenticationState.state, state),
+          eq(authenticationState.valid, true),
+          sql`${authenticationState.created_at} > NOW() - INTERVAL '1 hour'`,
         ),
       );
 
@@ -78,13 +78,13 @@ export async function GET(request: NextRequest) {
 
     // Mark the state as used
     await db
-      .update(state_connections)
+      .update(authenticationState)
       .set({ valid: false })
-      .where(eq(state_connections.id, stateInDb.id));
+      .where(eq(authenticationState.id, stateInDb.id));
 
     // Insert tokens into database
     const user_id = stateInDb.user_id;
-    await db.insert(jobber_tokens).values({
+    await db.insert(jobberTokens).values({
       access_token: oauthData.access_token,
       refresh_token: oauthData.refresh_token,
       user_id: user_id,

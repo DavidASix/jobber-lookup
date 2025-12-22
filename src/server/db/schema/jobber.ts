@@ -9,7 +9,7 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
-export const state_connections = pgTable("state_connections", {
+export const authenticationState = pgTable("authentication_state", {
   id: serial("id").primaryKey(),
   valid: boolean("valid").notNull().default(true),
   state: text("state").notNull().unique(),
@@ -19,7 +19,7 @@ export const state_connections = pgTable("state_connections", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const jobber_tokens = pgTable("jobber_tokens", {
+export const jobberTokens = pgTable("jobber_tokens", {
   id: serial("id").primaryKey(),
   access_token: text("access_token").notNull().unique(),
   refresh_token: text("refresh_token").notNull().unique(),
@@ -29,7 +29,7 @@ export const jobber_tokens = pgTable("jobber_tokens", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
-export const jobber_account = pgTable("jobber_account", {
+export const jobberAccounts = pgTable("jobber_accounts", {
   id: serial("id").primaryKey(),
   public_id: uuid("public_id").defaultRandom().unique().notNull(),
   user_id: text("user_id")
@@ -42,26 +42,26 @@ export const jobber_account = pgTable("jobber_account", {
   phone: text("phone"),
 });
 
-export const stateConnectionsRelations = relations(
-  state_connections,
+export const authenticationStateRelations = relations(
+  authenticationState,
   ({ one }) => ({
     user: one(users, {
-      fields: [state_connections.user_id],
+      fields: [authenticationState.user_id],
       references: [users.id],
     }),
   }),
 );
 
-export const jobberTokensRelations = relations(jobber_tokens, ({ one }) => ({
+export const jobberTokensRelations = relations(jobberTokens, ({ one }) => ({
   user: one(users, {
-    fields: [jobber_tokens.user_id],
+    fields: [jobberTokens.user_id],
     references: [users.id],
   }),
 }));
 
-export const jobberAccountRelations = relations(jobber_account, ({ one }) => ({
+export const jobberAccountRelations = relations(jobberAccounts, ({ one }) => ({
   user: one(users, {
-    fields: [jobber_account.user_id],
+    fields: [jobberAccounts.user_id],
     references: [users.id],
   }),
 }));
