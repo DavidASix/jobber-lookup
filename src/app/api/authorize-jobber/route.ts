@@ -73,8 +73,32 @@ export async function GET(request: NextRequest) {
 
     // Exchange authorization code for access token
     const oauthRequest = await fetch(authUrl, { method: "POST" });
+
+    if (!oauthRequest.ok) {
+      const errorText = await oauthRequest.text();
+      console.error(
+        `Jobber OAuth token exchange failed with status ${oauthRequest.status}:`,
+        errorText,
+      );
+      return NextResponse.redirect(
+        new URL("/?error=oauth_failed", request.url),
+      );
+    }
+
     const oauthResponse: unknown = await oauthRequest.json();
-    const oauthData = oauthTokenSchema.parse(oauthResponse);
+    const parseResult = oauthTokenSchema.safeParse(oauthResponse);
+
+    if (!parseResult.success) {
+      console.error(
+        "Invalid OAuth response from Jobber:",
+        parseResult.error.errors,
+      );
+      return NextResponse.redirect(
+        new URL("/?error=invalid_response", request.url),
+      );
+    }
+
+    const oauthData = parseResult.data;
 
     // Mark the state as used
     await db
@@ -94,10 +118,14 @@ export async function GET(request: NextRequest) {
 
     // Update user's setup progress to step 3
     await insertStep(user_id, 3);
+
+    // Success - redirect to home
+    return NextResponse.redirect(new URL("/", request.url));
   } catch (error) {
     console.error("OAuth authorization error:", error);
-  } finally {
-    // Always redirect to home
-    return NextResponse.redirect(new URL("/", request.url));
+    // Redirect with error parameter for user feedback
+    return NextResponse.redirect(
+      new URL("/?error=authorization_error", request.url),
+    );
   }
 }
