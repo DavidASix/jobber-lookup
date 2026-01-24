@@ -28,7 +28,7 @@ export const env = createEnv({
   client: {
     NEXT_PUBLIC_JOBBER_CLIENT_ID: z.string().url(),
     /**
-     * The URL of the project, including http, with no trailing slash, e.g. for links in emails. 
+     * The URL of the project, including http, with no trailing slash, e.g. for links in emails.
      */
     NEXT_PUBLIC_PROJECT_URL: z.string().url(),
   },

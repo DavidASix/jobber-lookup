@@ -28,7 +28,7 @@ export function Dashboard({ user }: { user: User }) {
   if (publicIdStatus === "pending") {
     return <LoadingState />;
   }
-  
+
   if (!publicId) {
     return (
       <>

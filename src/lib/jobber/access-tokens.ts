@@ -31,7 +31,7 @@ export async function getJobberAccessToken(
   // Try to refresh the token
   try {
     const refreshParams = new URLSearchParams({
-      client_id: env.JOBBER_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
       client_secret: env.JOBBER_CLIENT_SECRET,
       grant_type: "refresh_token",
       refresh_token: tokenRecord.refresh_token,

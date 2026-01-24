@@ -61,7 +61,7 @@ export async function GET(request: NextRequest) {
 
     // Prepare token exchange request
     const authParams = new URLSearchParams({
-      client_id: env.JOBBER_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
       client_secret: env.JOBBER_CLIENT_SECRET,
       grant_type: "authorization_code",
       code: code,
