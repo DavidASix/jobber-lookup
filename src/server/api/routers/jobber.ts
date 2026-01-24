@@ -2,8 +2,8 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { authenticationState, jobberAccounts } from "~/server/db/schema/jobber";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
-import { accountData } from "~/lib/jobber";
-import { getJobberAccessToken } from "~/lib/jobber-tokens";
+import { accountData } from "~/lib/jobber/graphql";
+import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
 
 export const jobberRouter = createTRPCRouter({
   getState: protectedProcedure.query(async ({ ctx }) => {

@@ -1,4 +1,8 @@
 import { z } from "zod";
+
+import { db } from "~/server/db";
+import { jobberAccounts } from "~/server/db/schema/jobber";
+
 import {
   accountResponseSchema,
   clientEmailsResponseSchema,
@@ -7,29 +11,12 @@ import {
   type Client,
   type Invoice,
   type Quote,
-} from "~/types/jobber";
-import { db } from "~/server/db";
-import { jobberAccounts } from "~/server/db/schema/jobber";
-
-export const urls = {
-  graphql: "https://api.getjobber.com/api/graphql",
-  oauth: "https://api.getjobber.com/api/oauth/token",
-};
+} from "./types";
+import { urls, createGraphqlHeaders } from "./utils";
 
 /**
  * Functions to interact with Jobber API
  */
-
-/**
- * Construct headers for Jobber GraphQL API requests
- */
-function createJobberHeaders(token: string): Record<string, string> {
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-    "X-JOBBER-GRAPHQL-VERSION": "2024-12-05",
-  };
-}
 
 /**
  * Find a client by email address in Jobber
@@ -58,7 +45,7 @@ export async function findClientByEmail(
 
     const response = await fetch(urls.graphql, {
       method: "POST",
-      headers: createJobberHeaders(token),
+      headers: createGraphqlHeaders(token),
       body: JSON.stringify({
         query,
         variables: { email },
@@ -139,7 +126,7 @@ export async function fetchInvoices(
 
   const response = await fetch(urls.graphql, {
     method: "POST",
-    headers: createJobberHeaders(token),
+    headers: createGraphqlHeaders(token),
     body: JSON.stringify({
       query,
       variables: { clientId },
@@ -196,7 +183,7 @@ export async function fetchQuotes(
 
   const response = await fetch(urls.graphql, {
     method: "POST",
-    headers: createJobberHeaders(token),
+    headers: createGraphqlHeaders(token),
     body: JSON.stringify({
       query,
       variables: { clientId },
@@ -244,7 +231,7 @@ export async function accountData(
 
   const response = await fetch(urls.graphql, {
     method: "POST",
-    headers: createJobberHeaders(token),
+    headers: createGraphqlHeaders(token),
     body: JSON.stringify({ query }),
   });
 

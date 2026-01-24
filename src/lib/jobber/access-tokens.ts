@@ -1,9 +1,11 @@
+import { eq, desc } from "drizzle-orm";
+
 import { db } from "~/server/db";
 import { jobberTokens } from "~/server/db/schema/jobber";
-import { eq, desc } from "drizzle-orm";
 import { env } from "~/env";
-import { tokenResponseSchema } from "~/types/jobber";
-import { urls } from "./jobber";
+
+import { tokenResponseSchema } from "./types";
+import { urls } from "./utils";
 
 /**
  * Gets a valid Jobber access token for a user, refreshing if necessary
