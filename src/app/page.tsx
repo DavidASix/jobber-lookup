@@ -1,8 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { MagicLinkForm } from "~/app/_components/magic-link-form";
-import { LoadingState } from "~/app/_components/loading-state";
+
+import { MagicLinkForm } from "./_components/magic-link-form";
+import { LoadingState } from "./_components/loading-state";
+import { Dashboard } from "./_dashboard/dashboard";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -28,8 +30,8 @@ export default function Home() {
   }
 
   return (
-    <div className="flex flex-1 items-center justify-center">
-      <h3 className="text-foreground text-3xl font-semibold">Dashboard</h3>
+    <div className="flex flex-1 justify-center">
+      <Dashboard user={session.user} />
     </div>
   );
 }
