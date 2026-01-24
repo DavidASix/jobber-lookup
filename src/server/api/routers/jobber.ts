@@ -41,7 +41,7 @@ export const jobberRouter = createTRPCRouter({
       state,
     }).toString();
 
-    return `${urls.oauth}?${queryString}`;
+    return `${urls.oauth.authorize}?${queryString}`;
   }),
 
   getState: protectedProcedure.query(async ({ ctx }) => {

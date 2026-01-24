@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
       redirect_uri: redirectUri,
     }).toString();
 
-    const authUrl = `${urls.oauth}?${authParams}`;
+    const authUrl = `${urls.oauth.token}?${authParams}`;
 
     // Exchange authorization code for access token
     const oauthRequest = await fetch(authUrl, { method: "POST" });

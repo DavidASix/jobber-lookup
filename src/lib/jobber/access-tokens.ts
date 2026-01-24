@@ -37,7 +37,7 @@ export async function getJobberAccessToken(
       refresh_token: tokenRecord.refresh_token,
     });
 
-    const response = await fetch(`${urls.oauth}?${refreshParams}`, {
+    const response = await fetch(`${urls.oauth.token}?${refreshParams}`, {
       method: "POST",
     });
 
