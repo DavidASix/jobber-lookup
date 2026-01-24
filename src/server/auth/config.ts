@@ -22,6 +22,7 @@ declare module "next-auth" {
   interface Session extends DefaultSession {
     user: {
       id: string;
+      emailVerified: Date | null;
       // ...other properties
       // role: UserRole;
     } & DefaultSession["user"];
@@ -72,6 +73,8 @@ export const authConfig = {
   }),
   callbacks: {
     session: ({ session, user }) => ({
+      // TODO: emailVerified is in this user object, but doesn't appear in any types (other than the one
+      // we augmented above). Investigate later.
       ...session,
       user: {
         ...session.user,

@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { Button } from "~/components/ui/button";
 import { env } from "~/env";
 
 function CopyButton({ textToCopy }: { textToCopy: string }) {
@@ -17,13 +18,9 @@ function CopyButton({ textToCopy }: { textToCopy: string }) {
   };
 
   return (
-    <button
-      onClick={handleCopy}
-      className="bg-primary text-primary-foreground hover:bg-primary/90 rounded-md px-3 py-1.5 text-sm transition-colors"
-      type="button"
-    >
+    <Button onClick={handleCopy} size="sm">
       {copied ? "Copied!" : "Copy"}
-    </button>
+    </Button>
   );
 }
 
@@ -78,22 +75,19 @@ export function IntegrationTutorial({ public_id }: { public_id: string }) {
 
   return (
     <div className="mx-auto space-y-6">
-      <div>
-        <h1 className="mb-2 text-2xl font-bold">Integration Guide</h1>
-        <p className="text-muted-foreground">
-          Add an email lookup form to your website
-        </p>
-      </div>
-
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Your API Endpoint</h2>
-        <div className="bg-muted relative rounded-md p-3">
+        <h2 className="text-md font-semibold">Your API Endpoint</h2>
+        <p>
+          You can send GET requests to the endpoint below to trigger sending.
+          You may prefer to use the simple example form below.
+        </p>
+        <div className="bg-muted relative p-3">
           <div className="absolute top-2 right-2">
             <CopyButton
               textToCopy={`${env.NEXT_PUBLIC_PROJECT_URL}/api/send-lookup-email?id=${public_id}&email=Client_Email_Address`}
             />
           </div>
-          <code className="text-sm break-all">
+          <code className="text-xs break-all">
             {env.NEXT_PUBLIC_PROJECT_URL}/api/send-lookup-email?id=
             {public_id}
             &email=Client_Email_Address
@@ -102,18 +96,18 @@ export function IntegrationTutorial({ public_id }: { public_id: string }) {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-lg font-semibold">Example Implementation</h2>
+        <h2 className="text-md font-semibold">Example Implementation</h2>
         <p>
           You can copy and paste this implementation into your website to enable
-          client invoice looks, our share it with your developer for
+          client invoice lookups, or share it with your developer for
           implementation.
         </p>
         <div className="relative">
           <div className="absolute top-2 right-2 z-10">
             <CopyButton textToCopy={exampleCode} />
           </div>
-          <pre className="bg-muted overflow-x-auto rounded-md p-4">
-            <code className="text-sm">{exampleCode}</code>
+          <pre className="bg-muted overflow-x-auto p-4">
+            <code className="text-xs">{exampleCode}</code>
           </pre>
         </div>
       </section>

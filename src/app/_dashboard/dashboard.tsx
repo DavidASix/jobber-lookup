@@ -1,14 +1,25 @@
 "use client";
 
-import type { User } from "next-auth";
-import { api } from "~/trpc/react";
-import { LoadingState } from "../_components/loading-state";
-import { Button } from "~/components/ui/button";
+import type { Session } from "next-auth";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { toast } from "sonner";
+
+import { api } from "~/trpc/react";
+
+import { Button } from "~/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "~/components/ui/card";
+import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+
+import { LoadingState } from "../_components/loading-state";
 import { SendEmailForm } from "./send-email-form";
 import { IntegrationTutorial } from "./integration-tutorial";
-import { toast } from "sonner";
 
 // TODO: add a danger button to clear all connected jobber accounts, and push user to jobber to do the same
 
@@ -24,9 +35,9 @@ const errorParamDetails: Record<string, string> = {
 };
 
 const defaultError =
-  "An error has occurred, pleased refresh and try again later.";
+  "An error has occurred, please refresh and try again later.";
 
-export function Dashboard({ user }: { user: User }) {
+export function Dashboard({ user }: { user: Session["user"] }) {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
   const searchParams = useSearchParams();
   const errorParam = searchParams.get("error");
@@ -58,35 +69,158 @@ export function Dashboard({ user }: { user: User }) {
   }
 
   if (errorParam) {
-    return <p>{errorParamDetails[errorParam] ?? defaultError}</p>;
+    return (
+      <Alert variant="destructive" className="mx-auto max-w-100">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          {errorParamDetails[errorParam] ?? defaultError}
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   if (accountDataStatus === "error" || authUrlStatus === "error") {
-    return <p>Error loading data. Please try again later.</p>;
+    return (
+      <Alert variant="destructive" className="mx-auto max-w-100">
+        <AlertTitle>Error</AlertTitle>
+        <AlertDescription>
+          Error loading data. Please try again later.
+        </AlertDescription>
+      </Alert>
+    );
   }
 
   if (accountDataStatus === "pending") {
-    return <LoadingState />;
+    return (
+      <div className="flex flex-1 items-center justify-center">
+        <LoadingState />
+      </div>
+    );
   }
 
   if (accountData === null) {
     return (
-      <>
-        <p>No Jobber account linked.</p>
-        <Button size="lg" onClick={handleAuthorize} disabled={!authUrl}>
-          Link your Jobber Account
-        </Button>
-      </>
+      <div className="flex flex-1 items-center justify-center">
+        <Card className="w-full max-w-md">
+          <CardHeader>
+            <CardTitle>Connect Your Jobber Account</CardTitle>
+            <CardDescription>
+              Link your Jobber account to start using the invoice lookup tool
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="pt-6">
+            <Button
+              size="lg"
+              onClick={handleAuthorize}
+              disabled={!authUrl}
+              className="w-full"
+            >
+              Link your Jobber Account
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   // User has linked their Jobber account
   return (
-    <>
-      <p>{JSON.stringify(user)}</p>
-      <p>{JSON.stringify(accountData)}</p>
-      <SendEmailForm public_id={accountData.public_id} />
-      <IntegrationTutorial public_id={accountData.public_id} />
-    </>
+    <div className="grid w-full grid-cols-1 gap-6 lg:grid-cols-2">
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Account Information</CardTitle>
+          <CardDescription>Your profile details</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid gap-3">
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <dt className="text-muted-foreground text-xs font-medium">
+                Email
+              </dt>
+              <dd className="text-foreground text-xs">{user.email}</dd>
+            </div>
+            {user.name && (
+              <div className="grid grid-cols-[120px_1fr] gap-2">
+                <dt className="text-muted-foreground text-xs font-medium">
+                  Name
+                </dt>
+                <dd className="text-foreground text-xs">{user.name}</dd>
+              </div>
+            )}
+            {user.emailVerified && (
+              <div className="grid grid-cols-[120px_1fr] gap-2">
+                <dt className="text-muted-foreground text-xs font-medium">
+                  Account Created
+                </dt>
+                <dd className="text-foreground text-xs">
+                  {new Date(user.emailVerified).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </dd>
+              </div>
+            )}
+          </dl>
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Jobber Account</CardTitle>
+          <CardDescription>Connected Jobber account details</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <dl className="grid gap-3">
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <dt className="text-muted-foreground text-xs font-medium">
+                Company Name
+              </dt>
+              <dd className="text-foreground text-xs">{accountData.name}</dd>
+            </div>
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <dt className="text-muted-foreground text-xs font-medium">
+                Industry
+              </dt>
+              <dd className="text-foreground text-xs">
+                {accountData.industry}
+              </dd>
+            </div>
+            <div className="grid grid-cols-[120px_1fr] gap-2">
+              <dt className="text-muted-foreground text-xs font-medium">
+                Phone
+              </dt>
+              <dd className="text-foreground text-xs">{accountData.phone}</dd>
+            </div>
+          </dl>
+        </CardContent>
+      </Card>
+
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Invoice Lookup</CardTitle>
+          <CardDescription>
+            Send invoice lookup email to a client
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <SendEmailForm public_id={accountData.public_id} />
+        </CardContent>
+      </Card>
+
+      {/* <div>
+        TODO: Social links for
+      </div> */}
+
+      <Card className="col-span-1 lg:col-span-2">
+        <CardHeader>
+          <CardTitle>Integration Guide</CardTitle>
+          <CardDescription>Add invoice lookup to your website</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <IntegrationTutorial public_id={accountData.public_id} />
+        </CardContent>
+      </Card>
+    </div>
   );
 }

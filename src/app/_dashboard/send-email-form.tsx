@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
+import { Alert, AlertDescription } from "~/components/ui/alert";
 
 type FormStatus = "idle" | "loading" | "success" | "error";
 
@@ -62,25 +63,48 @@ export function SendEmailForm({ public_id }: { public_id: string }) {
   const isDisabled = status === "loading";
 
   return (
-    <form onSubmit={handleSubmit} className="flex flex-col">
-      <Label htmlFor="email">Email</Label>
-      <Input
-        type="email"
-        id="email"
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        disabled={isDisabled}
-      />
+    <form onSubmit={handleSubmit} className="space-y-4">
+      <div className="space-y-2">
+        <Label htmlFor="email" className="text-xs font-medium">
+          Client Email Address
+        </Label>
+        <Input
+          type="email"
+          id="email"
+          placeholder="client@example.com"
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
+          required
+          disabled={isDisabled}
+        />
+      </div>
+
       <Button
         type="submit"
         disabled={isDisabled}
         variant={status === "error" ? "destructive" : "default"}
-        className="mt-2 self-end"
+        className="w-full"
+        size="lg"
       >
         {getButtonText()}
       </Button>
+
+      {status === "success" && (
+        <Alert>
+          <AlertDescription>
+            Email sent successfully! Your client should receive it shortly.
+          </AlertDescription>
+        </Alert>
+      )}
+
+      {status === "error" && (
+        <Alert variant="destructive">
+          <AlertDescription>
+            Could not send email. Please check the email address and try again.
+            Contact developer if issue persists.
+          </AlertDescription>
+        </Alert>
+      )}
     </form>
   );
 }
