@@ -8,6 +8,7 @@ import { SessionProvider } from "next-auth/react";
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/theme/theme-provider";
 import { Header } from "./_components/header";
+import { Toaster } from "~/components/ui/sonner";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -33,6 +34,7 @@ export default function RootLayout({
                 <div className="w-full max-w-300 flex-1 overflow-scroll">
                   {children}
                 </div>
+                <Toaster position="top-right" />
               </main>
             </SessionProvider>
           </TRPCReactProvider>
