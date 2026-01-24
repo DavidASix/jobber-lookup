@@ -5,6 +5,7 @@ import { eq, and, sql } from "drizzle-orm";
 import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
 import { env } from "~/env";
+import { urls } from "~/lib/jobber/utils";
 
 const authorizeSchema = z.object({
   code: z.string(),
@@ -56,8 +57,8 @@ export async function GET(request: NextRequest) {
     }
 
     // Construct redirect URI from the request
-    const url = new URL(request.url);
-    const redirectUri = `${url.origin}/api/authorize-jobber`;
+
+    const redirectUri = `${env.NEXT_PUBLIC_PROJECT_URL}/api/authorize-jobber`;
 
     // Prepare token exchange request
     const authParams = new URLSearchParams({
@@ -68,7 +69,7 @@ export async function GET(request: NextRequest) {
       redirect_uri: redirectUri,
     }).toString();
 
-    const authUrl = `https://api.getjobber.com/api/oauth/token?${authParams}`;
+    const authUrl = `${urls.oauth}?${authParams}`;
 
     // Exchange authorization code for access token
     const oauthRequest = await fetch(authUrl, { method: "POST" });
