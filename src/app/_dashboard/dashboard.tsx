@@ -5,16 +5,34 @@ import { api } from "~/trpc/react";
 import { LoadingState } from "../_components/loading-state";
 import { Button } from "~/components/ui/button";
 import { useState } from "react";
+import { useSearchParams } from "next/navigation";
+
+const errorParamDetails: Record<string, string> = {
+  oauth_failed:
+    "Error linking Jobber account. Please refresh the page and try again later.",
+  missing_token:
+    "Failed to retrieve access token. Please contact your developer.",
+  invalid_response:
+    "Received invalid response from Jobber. Please contact your developer.",
+  data_fetch_fail:
+    "Failed to fetch account data. Please refresh and try again later.",
+};
+
+const defaultError =
+  "An error has occurred, pleased refresh and try again later.";
 
 export function Dashboard({ user }: { user: User }) {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
+  const searchParams = useSearchParams();
+  const errorParam = searchParams.get("error");
 
-  const { data: publicId, status: publicIdStatus } =
-    api.jobber.getPublicId.useQuery();
+  const { data: accountData, status: accountDataStatus } =
+    api.jobber.getAccountData.useQuery();
 
-  const { data: authUrl } = api.jobber.getAuthorizationUrl.useQuery(undefined, {
-    enabled: publicId === null && !isAuthorizing,
-  });
+  const { data: authUrl, status: authUrlStatus } =
+    api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
+      enabled: accountData === null && !isAuthorizing,
+    });
 
   const handleAuthorize = async () => {
     if (isAuthorizing) return;
@@ -22,14 +40,23 @@ export function Dashboard({ user }: { user: User }) {
       // TODO: toast and give escape hatch
     }
     setIsAuthorizing(true);
+    // TODO: Probably we want to just "kill" this tab asking the user to refresh or close it after they click auth
     window.open(authUrl, "_blank");
   };
 
-  if (publicIdStatus === "pending") {
+  if (errorParam) {
+    return <p>{errorParamDetails[errorParam] ?? defaultError}</p>;
+  }
+
+  if (accountDataStatus === "error" || authUrlStatus === "error") {
+    return <p>Error loading data. Please try again later.</p>;
+  }
+
+  if (accountDataStatus === "pending") {
     return <LoadingState />;
   }
 
-  if (!publicId) {
+  if (accountData === null) {
     return (
       <>
         <p>No Jobber account linked.</p>
@@ -43,9 +70,12 @@ export function Dashboard({ user }: { user: User }) {
       </>
     );
   }
+
+  // User has linked their Jobber account
   return (
     <>
       <p>{JSON.stringify(user)}</p>
+      <p>{JSON.stringify(accountData)}</p>
     </>
   );
 }

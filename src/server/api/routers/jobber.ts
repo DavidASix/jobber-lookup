@@ -8,21 +8,21 @@ import { urls } from "~/lib/jobber/utils";
 import { env } from "~/env";
 
 export const jobberRouter = createTRPCRouter({
-  getPublicId: protectedProcedure.query(async ({ ctx }) => {
+  getAccountData: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
 
     const [account] = await db
-      .select({ public_id: jobberAccounts.public_id })
+      .select()
       .from(jobberAccounts)
       .where(eq(jobberAccounts.user_id, user_id));
 
-    return account?.public_id ?? null;
+    return account ?? null;
   }),
 
   /**
    * Stores a new random state associated with the current user and returns the full Jobber OAuth authorization URL.
    */
-  getAuthorizationUrl: protectedProcedure.query(async ({ ctx }) => {
+  getPublicAuthorizationUrl: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
     const state = crypto.randomUUID();
     await db.insert(authenticationState).values({
@@ -32,7 +32,7 @@ export const jobberRouter = createTRPCRouter({
     });
     const client_id = env.NEXT_PUBLIC_JOBBER_CLIENT_ID;
     const base_url = env.NEXT_PUBLIC_PROJECT_URL;
-    const redirect_uri = `${base_url}/api/jobber-connect/authorize`;
+    const redirect_uri = `${base_url}/api/authorize-jobber`;
 
     const queryString = new URLSearchParams({
       response_type: "code",
@@ -41,7 +41,7 @@ export const jobberRouter = createTRPCRouter({
       state,
     }).toString();
 
-    return `${urls.oauth}?${queryString}`;
+    return `${urls.oauth.authorize}?${queryString}`;
   }),
 
   getState: protectedProcedure.query(async ({ ctx }) => {
@@ -68,15 +68,5 @@ export const jobberRouter = createTRPCRouter({
     const account = await accountData(user_id, token);
 
     return account;
-  }),
-
-  getAccountData: protectedProcedure.query(async ({ ctx }) => {
-    const { id: user_id } = ctx.session.user;
-
-    const account = await db.query.jobberAccounts.findFirst({
-      where: eq(jobberAccounts.user_id, user_id),
-    });
-
-    return account ?? null;
   }),
 });

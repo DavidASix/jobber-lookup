@@ -21,7 +21,8 @@ export async function getJobberAccessToken(
     .select()
     .from(jobberTokens)
     .where(eq(jobberTokens.user_id, user_id))
-    .orderBy(desc(jobberTokens.created_at));
+    .orderBy(desc(jobberTokens.created_at))
+    .limit(1);
 
   if (!tokenRecord) {
     console.error("No token found for user");
@@ -37,7 +38,7 @@ export async function getJobberAccessToken(
       refresh_token: tokenRecord.refresh_token,
     });
 
-    const response = await fetch(`${urls.oauth}?${refreshParams}`, {
+    const response = await fetch(`${urls.oauth.token}?${refreshParams}`, {
       method: "POST",
     });
 
