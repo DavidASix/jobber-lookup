@@ -11,6 +11,11 @@ import {
 import { db } from "~/server/db";
 import { jobberAccounts } from "~/server/db/schema/jobber";
 
+export const urls = {
+  graphql: "https://api.getjobber.com/api/graphql",
+  oauth: "https://api.getjobber.com/api/oauth/token",
+};
+
 /**
  * Functions to interact with Jobber API
  */
@@ -51,7 +56,7 @@ export async function findClientByEmail(
       }
     `;
 
-    const response = await fetch("https://api.getjobber.com/api/graphql", {
+    const response = await fetch(urls.graphql, {
       method: "POST",
       headers: createJobberHeaders(token),
       body: JSON.stringify({
@@ -132,7 +137,7 @@ export async function fetchInvoices(
     }
   `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
+  const response = await fetch(urls.graphql, {
     method: "POST",
     headers: createJobberHeaders(token),
     body: JSON.stringify({
@@ -189,7 +194,7 @@ export async function fetchQuotes(
     }
   `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
+  const response = await fetch(urls.graphql, {
     method: "POST",
     headers: createJobberHeaders(token),
     body: JSON.stringify({
@@ -237,7 +242,7 @@ export async function accountData(
     }
   `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
+  const response = await fetch(urls.graphql, {
     method: "POST",
     headers: createJobberHeaders(token),
     body: JSON.stringify({ query }),
