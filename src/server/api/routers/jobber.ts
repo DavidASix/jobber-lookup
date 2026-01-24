@@ -32,7 +32,7 @@ export const jobberRouter = createTRPCRouter({
     });
     const client_id = env.NEXT_PUBLIC_JOBBER_CLIENT_ID;
     const base_url = env.NEXT_PUBLIC_PROJECT_URL;
-    const redirect_uri = `${base_url}/api/jobber-connect/authorize`;
+    const redirect_uri = `${base_url}/api/authorize-jobber`;
 
     const queryString = new URLSearchParams({
       response_type: "code",
