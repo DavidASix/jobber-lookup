@@ -6,6 +6,9 @@ import { urls } from "~/lib/jobber/utils";
 import { env } from "~/env";
 
 export const jobberRouter = createTRPCRouter({
+  /**
+   * Fetches the Jobber account data associated with the current user from the database, does not call Jobber API.
+   */
   getAccountData: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
 

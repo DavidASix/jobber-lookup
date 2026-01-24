@@ -10,7 +10,7 @@ export const clientSchema = z.object({
   }),
 });
 
-export const clientsSchema = z.array(clientSchema);
+const clientsSchema = z.array(clientSchema);
 
 export const invoiceSchema = z.object({
   id: z.string(),
@@ -51,7 +51,7 @@ export const clientEmailsResponseSchema = z.object({
   }),
 });
 
-export const accountSchema = z.object({
+const accountSchema = z.object({
   id: z.string(),
   name: z.string().nullable(),
   signupName: z.string().nullable(),
@@ -73,4 +73,3 @@ export const tokenResponseSchema = z.object({
 export type Client = z.infer<typeof clientSchema>["client"];
 export type Invoice = z.infer<typeof invoiceSchema>;
 export type Quote = z.infer<typeof quoteSchema>;
-export type Account = z.infer<typeof accountSchema>;

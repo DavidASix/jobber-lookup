@@ -9,6 +9,12 @@ import {
 } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
+/**
+ * Stores OAuth authentication states to validate the OAuth flow and associate it with a user.
+ *
+ * Each state is a unique string tied to a user and marked as valid or invalid. The state is used to ensure the
+ * correct callback from Jobber corresponds to the initiated OAuth request. Once used, the state should be marked invalid to prevent reuse.
+ */
 export const authenticationState = pgTable("authentication_state", {
   id: serial("id").primaryKey(),
   valid: boolean("valid").notNull().default(true),
@@ -19,6 +25,9 @@ export const authenticationState = pgTable("authentication_state", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
+/**
+ * Stores Jobber OAuth access and refresh tokens which are used to make authorized API requests on behalf of the user.
+ */
 export const jobberTokens = pgTable("jobber_tokens", {
   id: serial("id").primaryKey(),
   access_token: text("access_token").notNull(),
@@ -29,6 +38,9 @@ export const jobberTokens = pgTable("jobber_tokens", {
   created_at: timestamp("created_at").notNull().defaultNow(),
 });
 
+/**
+ * Fact table storing Jobber account information associated with each user. One entry per jobber public id.
+ */
 export const jobberAccounts = pgTable("jobber_accounts", {
   id: serial("id").primaryKey(),
   public_id: uuid("public_id").defaultRandom().unique().notNull(),

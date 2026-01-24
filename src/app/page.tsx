@@ -10,7 +10,11 @@ export default function Home() {
   const { data: session, status } = useSession();
 
   if (status === "loading") {
-    return <LoadingState />;
+    return (
+      <div className="flex min-h-full flex-col items-center justify-center gap-8 border p-10">
+        <LoadingState />
+      </div>
+    );
   }
 
   if (!session?.user) {
