@@ -78,7 +78,7 @@ export function IntegrationTutorial({ public_id }: { public_id: string }) {
       <section className="space-y-3">
         <h2 className="text-md font-semibold">Your API Endpoint</h2>
         <p>
-          You can send get requests to this below endpoint to trigger sending.
+          You can send GET requests to the endpoint below to trigger sending.
           You may prefer to use the simple example form below.
         </p>
         <div className="bg-muted relative p-3">
