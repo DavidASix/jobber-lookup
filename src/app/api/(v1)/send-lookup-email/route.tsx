@@ -6,8 +6,12 @@ import { Resend } from "resend";
 import { env } from "~/env";
 import { db } from "~/server/db";
 import { jobberAccounts } from "~/server/db/schema/jobber";
-import { getJobberAccessToken } from "~/lib/jobber-tokens";
-import { findClientByEmail, fetchInvoices, fetchQuotes } from "~/lib/jobber";
+import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
+import {
+  findClientByEmail,
+  fetchInvoices,
+  fetchQuotes,
+} from "~/lib/jobber/graphql";
 import { LookupEmail } from "~/lib/emails/lookup-email";
 
 const emailLookupSchema = z.object({

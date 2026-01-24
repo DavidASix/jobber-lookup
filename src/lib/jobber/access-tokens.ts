@@ -21,7 +21,8 @@ export async function getJobberAccessToken(
     .select()
     .from(jobberTokens)
     .where(eq(jobberTokens.user_id, user_id))
-    .orderBy(desc(jobberTokens.created_at));
+    .orderBy(desc(jobberTokens.created_at))
+    .limit(1);
 
   if (!tokenRecord) {
     console.error("No token found for user");
@@ -31,13 +32,13 @@ export async function getJobberAccessToken(
   // Try to refresh the token
   try {
     const refreshParams = new URLSearchParams({
-      client_id: env.JOBBER_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
       client_secret: env.JOBBER_CLIENT_SECRET,
       grant_type: "refresh_token",
       refresh_token: tokenRecord.refresh_token,
     });
 
-    const response = await fetch(`${urls.oauth}?${refreshParams}`, {
+    const response = await fetch(`${urls.oauth.token}?${refreshParams}`, {
       method: "POST",
     });
 
