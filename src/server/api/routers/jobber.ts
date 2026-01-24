@@ -2,12 +2,13 @@ import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { authenticationState, jobberAccounts } from "~/server/db/schema/jobber";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
-import { accountData } from "~/lib/jobber/graphql";
-import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
 import { urls } from "~/lib/jobber/utils";
 import { env } from "~/env";
 
 export const jobberRouter = createTRPCRouter({
+  /**
+   * Fetches the Jobber account data associated with the current user from the database, does not call Jobber API.
+   */
   getAccountData: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
 
@@ -42,31 +43,5 @@ export const jobberRouter = createTRPCRouter({
     }).toString();
 
     return `${urls.oauth.authorize}?${queryString}`;
-  }),
-
-  getState: protectedProcedure.query(async ({ ctx }) => {
-    const { id: user_id } = ctx.session.user;
-    const state = crypto.randomUUID();
-
-    await db.insert(authenticationState).values({
-      state,
-      user_id,
-      valid: true,
-    });
-
-    return { state };
-  }),
-
-  storeAccountData: protectedProcedure.mutation(async ({ ctx }) => {
-    const { id: user_id } = ctx.session.user;
-
-    const token = await getJobberAccessToken(user_id);
-    if (!token) {
-      throw new Error("Failed to get Jobber access token");
-    }
-
-    const account = await accountData(user_id, token);
-
-    return account;
   }),
 });
