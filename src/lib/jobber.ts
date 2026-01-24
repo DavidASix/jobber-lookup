@@ -4,7 +4,6 @@ import {
   clientEmailsResponseSchema,
   invoicesSchema,
   quotesSchema,
-  type Account,
   type Client,
   type Invoice,
   type Quote,
@@ -216,7 +215,16 @@ export async function fetchQuotes(
 export async function accountData(
   userId: string,
   token: string,
-): Promise<Account> {
+): Promise<{
+  id: number;
+  public_id: string;
+  user_id: string;
+  jobber_id: string;
+  name: string | null;
+  signup_name: string | null;
+  industry: string | null;
+  phone: string | null;
+}> {
   const query = `
     query AccountQuery {
       account {
@@ -275,5 +283,5 @@ export async function accountData(
     throw new Error("Failed to save account data to database");
   }
 
-  return account;
+  return accountRecord;
 }
