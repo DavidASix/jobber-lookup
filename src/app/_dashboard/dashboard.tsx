@@ -47,9 +47,14 @@ export function Dashboard({ user }: { user: User }) {
       );
     }
     setIsAuthorizing(true);
-    // TODO: Probably we want to just "kill" this tab asking the user to refresh or close it after they click auth
     window.open(authUrl, "_blank");
   };
+
+  if (isAuthorizing) {
+    return (
+      <p>Redirecting to Jobber for authorization. You can close this page.</p>
+    );
+  }
 
   if (errorParam) {
     return <p>{errorParamDetails[errorParam] ?? defaultError}</p>;
@@ -67,11 +72,7 @@ export function Dashboard({ user }: { user: User }) {
     return (
       <>
         <p>No Jobber account linked.</p>
-        <Button
-          size="lg"
-          onClick={handleAuthorize}
-          disabled={!authUrl || isAuthorizing}
-        >
+        <Button size="lg" onClick={handleAuthorize} disabled={!authUrl}>
           Link your Jobber Account
         </Button>
       </>
