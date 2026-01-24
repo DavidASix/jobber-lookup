@@ -6,15 +6,18 @@ import { LoadingState } from "../_components/loading-state";
 import { Button } from "~/components/ui/button";
 import { useState } from "react";
 
+// TODO: Handle ("/?error=oauth_failed")
+
 export function Dashboard({ user }: { user: User }) {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
 
-  const { data: publicId, status: publicIdStatus } =
-    api.jobber.getPublicId.useQuery();
+  const { data: accountData, status: accountDataStatus } =
+    api.jobber.getAccountData.useQuery();
 
-  const { data: authUrl } = api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
-    enabled: publicId === null && !isAuthorizing,
-  });
+  const { data: authUrl, status: authUrlStatus } =
+    api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
+      enabled: accountData === null && !isAuthorizing,
+    });
 
   const handleAuthorize = async () => {
     if (isAuthorizing) return;
@@ -22,14 +25,19 @@ export function Dashboard({ user }: { user: User }) {
       // TODO: toast and give escape hatch
     }
     setIsAuthorizing(true);
+    // TODO: Probably we want to just "kill" this tab asking the user to refresh or close it after they click auth
     window.open(authUrl, "_blank");
   };
 
-  if (publicIdStatus === "pending") {
+  if (accountDataStatus === "error" || authUrlStatus === "error") {
+    return <p>Error loading data. Please try again later.</p>;
+  }
+
+  if (accountDataStatus === "pending") {
     return <LoadingState />;
   }
 
-  if (!publicId) {
+  if (accountData === null) {
     return (
       <>
         <p>No Jobber account linked.</p>
@@ -43,9 +51,12 @@ export function Dashboard({ user }: { user: User }) {
       </>
     );
   }
+
+  // User has linked their Jobber account
   return (
     <>
       <p>{JSON.stringify(user)}</p>
+      <p>{JSON.stringify(accountData)}</p>
     </>
   );
 }
