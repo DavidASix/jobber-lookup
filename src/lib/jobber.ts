@@ -245,8 +245,8 @@ export async function accountData(
   const account = result.data.account;
 
   // Handle "Empty" signupName
-  let signupName = account.signupName;
-  signupName = signupName === "Empty" ? null : signupName;
+  let signup_name = account.signupName;
+  signup_name = signup_name === "Empty" ? null : signup_name;
 
   // Insert or update account data in database TODO: This should not update on public_id conflict, it should probably fail as the public id has already been claimed
   const [accountRecord] = await db
@@ -255,7 +255,7 @@ export async function accountData(
       user_id: userId,
       jobber_id: account.id,
       name: account.name,
-      signupName: signupName,
+      signup_name,
       industry: account.industry,
       phone: account.phone,
     })
@@ -264,7 +264,7 @@ export async function accountData(
       set: {
         jobber_id: account.id,
         name: account.name,
-        signupName: signupName,
+        signup_name,
         industry: account.industry,
         phone: account.phone,
       },

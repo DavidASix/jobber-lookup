@@ -37,7 +37,7 @@ export const jobberAccounts = pgTable("jobber_accounts", {
     .references(() => users.id, { onDelete: "cascade" }),
   jobber_id: text("jobber_id").notNull(),
   name: text("name"),
-  signupName: text("signupName"),
+  signup_name: text("signup_name"),
   industry: text("industry"),
   phone: text("phone"),
 });
