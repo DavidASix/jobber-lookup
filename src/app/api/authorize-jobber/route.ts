@@ -6,6 +6,8 @@ import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
 import { env } from "~/env";
 import { urls } from "~/lib/jobber/utils";
+import { accountData } from "~/lib/jobber/graphql";
+import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
 
 const authorizeSchema = z.object({
   code: z.string(),
@@ -115,6 +117,15 @@ export async function GET(request: NextRequest) {
     });
 
     console.log("OAuth tokens inserted into database");
+
+    const token = await getJobberAccessToken(user_id);
+
+    if (!token) {
+      throw new Error("Failed to get Jobber access token");
+    }
+
+    // Fetch and store the account data, but do nothing with the return
+    await accountData(user_id, token);
 
     // Success - redirect to home
     return NextResponse.redirect(new URL("/", request.url));
