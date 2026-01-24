@@ -1,8 +1,11 @@
+import { eq, desc } from "drizzle-orm";
+
 import { db } from "~/server/db";
 import { jobberTokens } from "~/server/db/schema/jobber";
-import { eq, desc } from "drizzle-orm";
 import { env } from "~/env";
-import { tokenResponseSchema } from "~/types/jobber";
+
+import { tokenResponseSchema } from "./types";
+import { urls } from "./utils";
 
 /**
  * Gets a valid Jobber access token for a user, refreshing if necessary
@@ -34,10 +37,9 @@ export async function getJobberAccessToken(
       refresh_token: tokenRecord.refresh_token,
     });
 
-    const response = await fetch(
-      `https://api.getjobber.com/api/oauth/token?${refreshParams}`,
-      { method: "POST" },
-    );
+    const response = await fetch(`${urls.oauth}?${refreshParams}`, {
+      method: "POST",
+    });
 
     if (!response.ok) {
       console.error("Failed to refresh token:", response.statusText);

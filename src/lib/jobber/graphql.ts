@@ -1,27 +1,22 @@
 import { z } from "zod";
+
+import { db } from "~/server/db";
+import { jobberAccounts } from "~/server/db/schema/jobber";
+
 import {
+  accountResponseSchema,
   clientEmailsResponseSchema,
   invoicesSchema,
   quotesSchema,
   type Client,
   type Invoice,
   type Quote,
-} from "~/types/jobber";
+} from "./types";
+import { urls, createGraphqlHeaders } from "./utils";
 
 /**
  * Functions to interact with Jobber API
  */
-
-/**
- * Construct headers for Jobber GraphQL API requests
- */
-function createJobberHeaders(token: string): Record<string, string> {
-  return {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${token}`,
-    "X-JOBBER-GRAPHQL-VERSION": "2024-12-05",
-  };
-}
 
 /**
  * Find a client by email address in Jobber
@@ -48,9 +43,9 @@ export async function findClientByEmail(
       }
     `;
 
-    const response = await fetch("https://api.getjobber.com/api/graphql", {
+    const response = await fetch(urls.graphql, {
       method: "POST",
-      headers: createJobberHeaders(token),
+      headers: createGraphqlHeaders(token),
       body: JSON.stringify({
         query,
         variables: { email },
@@ -129,9 +124,9 @@ export async function fetchInvoices(
     }
   `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
+  const response = await fetch(urls.graphql, {
     method: "POST",
-    headers: createJobberHeaders(token),
+    headers: createGraphqlHeaders(token),
     body: JSON.stringify({
       query,
       variables: { clientId },
@@ -186,9 +181,9 @@ export async function fetchQuotes(
     }
   `;
 
-  const response = await fetch("https://api.getjobber.com/api/graphql", {
+  const response = await fetch(urls.graphql, {
     method: "POST",
-    headers: createJobberHeaders(token),
+    headers: createGraphqlHeaders(token),
     body: JSON.stringify({
       query,
       variables: { clientId },
@@ -204,4 +199,81 @@ export async function fetchQuotes(
   const result = quotesResponseSchema.parse(data);
 
   return result.data.client.quotes.nodes;
+}
+
+/**
+ * Fetch account data from Jobber and save it to the database
+ */
+export async function accountData(
+  userId: string,
+  token: string,
+): Promise<{
+  id: number;
+  public_id: string;
+  user_id: string;
+  jobber_id: string;
+  name: string | null;
+  signup_name: string | null;
+  industry: string | null;
+  phone: string | null;
+}> {
+  const query = `
+    query AccountQuery {
+      account {
+        id
+        name
+        signupName
+        industry
+        phone
+      }
+    }
+  `;
+
+  const response = await fetch(urls.graphql, {
+    method: "POST",
+    headers: createGraphqlHeaders(token),
+    body: JSON.stringify({ query }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Failed to fetch account data: ${response.statusText}`);
+  }
+
+  const data: unknown = await response.json();
+  const result = accountResponseSchema.parse(data);
+
+  const account = result.data.account;
+
+  // Handle "Empty" signupName
+  let signup_name = account.signupName;
+  signup_name = signup_name === "Empty" ? null : signup_name;
+
+  // Insert or update account data in database TODO: This should not update on public_id conflict, it should probably fail as the public id has already been claimed
+  const [accountRecord] = await db
+    .insert(jobberAccounts)
+    .values({
+      user_id: userId,
+      jobber_id: account.id,
+      name: account.name,
+      signup_name,
+      industry: account.industry,
+      phone: account.phone,
+    })
+    .onConflictDoUpdate({
+      target: jobberAccounts.public_id,
+      set: {
+        jobber_id: account.id,
+        name: account.name,
+        signup_name,
+        industry: account.industry,
+        phone: account.phone,
+      },
+    })
+    .returning();
+
+  if (!accountRecord) {
+    throw new Error("Failed to save account data to database");
+  }
+
+  return accountRecord;
 }
