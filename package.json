@@ -12,6 +12,7 @@
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
     "db:clear": "tsx scripts/clear-database.ts",
+    "db:production:migrate": "tsx scripts/migrate-production.ts",
     "check": "pnpm check:format && pnpm check:lint && pnpm check:types && pnpm check:test",
     "check:format": "prettier --check \"**/*.{ts,tsx,js,jsx,mdx}\" --cache",
     "check:lint": "next lint",
