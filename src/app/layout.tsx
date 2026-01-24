@@ -30,7 +30,7 @@ export default function RootLayout({
             <SessionProvider>
               <main className="flex h-screen w-screen flex-col items-center justify-center">
                 <Header />
-                <div className="flex w-full max-w-300 flex-1 flex-col items-center justify-center gap-8">
+                <div className="w-full max-w-300 flex-1 overflow-scroll">
                   {children}
                 </div>
               </main>
