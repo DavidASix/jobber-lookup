@@ -8,15 +8,15 @@ import { urls } from "~/lib/jobber/utils";
 import { env } from "~/env";
 
 export const jobberRouter = createTRPCRouter({
-  getPublicId: protectedProcedure.query(async ({ ctx }) => {
+  getAccountData: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
 
     const [account] = await db
-      .select({ public_id: jobberAccounts.public_id })
+      .select()
       .from(jobberAccounts)
       .where(eq(jobberAccounts.user_id, user_id));
 
-    return account?.public_id ?? null;
+    return account ?? null;
   }),
 
   /**
@@ -68,15 +68,5 @@ export const jobberRouter = createTRPCRouter({
     const account = await accountData(user_id, token);
 
     return account;
-  }),
-
-  getAccountData: protectedProcedure.query(async ({ ctx }) => {
-    const { id: user_id } = ctx.session.user;
-
-    const account = await db.query.jobberAccounts.findFirst({
-      where: eq(jobberAccounts.user_id, user_id),
-    });
-
-    return account ?? null;
   }),
 });
