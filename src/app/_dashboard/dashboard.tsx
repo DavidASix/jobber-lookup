@@ -45,6 +45,7 @@ export function Dashboard({ user }: { user: User }) {
       toast.error(
         "Authorization URL not available. Please refresh and try again.",
       );
+      return;
     }
     setIsAuthorizing(true);
     window.open(authUrl, "_blank");
