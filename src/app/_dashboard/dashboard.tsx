@@ -6,6 +6,9 @@ import { LoadingState } from "../_components/loading-state";
 import { Button } from "~/components/ui/button";
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { SendEmailForm } from "./send-email-form";
+
+// TODO: add a danger button to clear all connected jobber accounts, and push user to jobber to do the same
 
 const errorParamDetails: Record<string, string> = {
   oauth_failed:
@@ -76,6 +79,7 @@ export function Dashboard({ user }: { user: User }) {
     <>
       <p>{JSON.stringify(user)}</p>
       <p>{JSON.stringify(accountData)}</p>
+      <SendEmailForm public_id={accountData.public_id} />
     </>
   );
 }
