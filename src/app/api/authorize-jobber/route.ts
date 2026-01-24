@@ -4,7 +4,6 @@ import { eq, and, sql } from "drizzle-orm";
 
 import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
-import { insertStep } from "~/lib/setup-steps";
 import { env } from "~/env";
 
 const authorizeSchema = z.object({
@@ -115,9 +114,6 @@ export async function GET(request: NextRequest) {
     });
 
     console.log("OAuth tokens inserted into database");
-
-    // Update user's setup progress to step 3
-    await insertStep(user_id, 3);
 
     // Success - redirect to home
     return NextResponse.redirect(new URL("/", request.url));
