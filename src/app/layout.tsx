@@ -1,19 +1,18 @@
-"use client";
-
 import "~/styles/globals.css";
 
 import { Geist } from "next/font/google";
-import { SessionProvider } from "next-auth/react";
-
-import { TRPCReactProvider } from "~/trpc/react";
-import { ThemeProvider } from "~/components/theme/theme-provider";
-import { Header } from "./_components/header";
-import { Toaster } from "~/components/ui/sonner";
+import { Providers } from "./_components/providers";
+import type { Metadata } from "next";
 
 const geist = Geist({
   subsets: ["latin"],
   variable: "--font-geist-sans",
 });
+
+export const metadata: Metadata = {
+  title: "Jobber Quote Lookup Tool",
+  description: "Look up Jobber quotes for your business",
+};
 
 export default function RootLayout({
   children,
@@ -21,24 +20,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning className={`${geist.variable}`}>
       <body>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-        >
-          <TRPCReactProvider>
-            <SessionProvider>
-              <main className="flex h-screen w-screen flex-col items-center justify-center">
-                <Header />
-                <div className="w-full max-w-300 flex-1 overflow-scroll">
-                  {children}
-                </div>
-                <Toaster position="top-right" />
-              </main>
-            </SessionProvider>
-          </TRPCReactProvider>
-        </ThemeProvider>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
