@@ -15,8 +15,8 @@ export const clientsSchema = z.array(clientSchema);
 export const invoiceSchema = z.object({
   id: z.string(),
   amounts: z.object({
-    total: z.string(),
-    invoiceBalance: z.string(),
+    total: z.number(),
+    invoiceBalance: z.number(),
   }),
   invoiceNumber: z.string(),
   invoiceStatus: z.string(),
@@ -31,7 +31,7 @@ export const invoicesSchema = z.array(invoiceSchema);
 export const quoteSchema = z.object({
   id: z.string(),
   amounts: z.object({
-    total: z.string(),
+    total: z.number(),
   }),
   quoteNumber: z.string(),
   quoteStatus: z.string(),

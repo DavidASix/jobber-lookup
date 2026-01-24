@@ -13,6 +13,6 @@ export function createGraphqlHeaders(token: string): Record<string, string> {
   return {
     "Content-Type": "application/json",
     Authorization: `Bearer ${token}`,
-    "X-JOBBER-GRAPHQL-VERSION": "2024-12-05",
+    "X-JOBBER-GRAPHQL-VERSION": "2025-04-16",
   };
 }

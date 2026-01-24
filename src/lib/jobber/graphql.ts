@@ -103,7 +103,7 @@ export async function fetchInvoices(
   });
 
   const query = `
-    query InvoiceQuery($clientId: ID!) {
+    query InvoiceQuery($clientId: EncodedId!) {
       client(id: $clientId) {
         invoices {
           nodes {
@@ -162,7 +162,7 @@ export async function fetchQuotes(
   });
 
   const query = `
-    query QuoteQuery($clientId: ID!) {
+    query QuoteQuery($clientId: EncodedId!) {
       client(id: $clientId) {
         quotes {
           nodes {
