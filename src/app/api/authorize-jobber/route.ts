@@ -4,8 +4,10 @@ import { eq, and, sql } from "drizzle-orm";
 
 import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
-import { insertStep } from "~/lib/setup-steps";
 import { env } from "~/env";
+import { urls } from "~/lib/jobber/utils";
+import { accountData } from "~/lib/jobber/graphql";
+import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
 
 const authorizeSchema = z.object({
   code: z.string(),
@@ -57,19 +59,19 @@ export async function GET(request: NextRequest) {
     }
 
     // Construct redirect URI from the request
-    const url = new URL(request.url);
-    const redirectUri = `${url.origin}/api/authorize-jobber`;
+
+    const redirectUri = `${env.NEXT_PUBLIC_PROJECT_URL}/api/authorize-jobber`;
 
     // Prepare token exchange request
     const authParams = new URLSearchParams({
-      client_id: env.JOBBER_CLIENT_ID,
+      client_id: env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
       client_secret: env.JOBBER_CLIENT_SECRET,
       grant_type: "authorization_code",
       code: code,
       redirect_uri: redirectUri,
     }).toString();
 
-    const authUrl = `https://api.getjobber.com/api/oauth/token?${authParams}`;
+    const authUrl = `${urls.oauth.token}?${authParams}`;
 
     // Exchange authorization code for access token
     const oauthRequest = await fetch(authUrl, { method: "POST" });
@@ -81,6 +83,7 @@ export async function GET(request: NextRequest) {
         errorText,
       );
       return NextResponse.redirect(
+        // TODO: It'd be nice to centralize this error URL construction somewhere to have better handling of the displayed response message, and logging
         new URL("/?error=oauth_failed", request.url),
       );
     }
@@ -116,11 +119,35 @@ export async function GET(request: NextRequest) {
 
     console.log("OAuth tokens inserted into database");
 
-    // Update user's setup progress to step 3
-    await insertStep(user_id, 3);
+    let token: string;
+    try {
+      const queriedToken = await getJobberAccessToken(user_id);
+      if (!queriedToken) {
+        throw new Error("Failed to retrieve access token after OAuth flow");
+      }
+      token = queriedToken;
+    } catch {
+      console.log("Failed to get access token for user after OAuth flow", {
+        user_id,
+      });
+      return NextResponse.redirect(
+        new URL("/?error=missing_token", request.url),
+      );
+    }
 
-    // Success - redirect to home
-    return NextResponse.redirect(new URL("/", request.url));
+    try {
+      // Fetch and store the account data, but do nothing with the return
+      await accountData(user_id, token);
+      // Success - redirect to home
+      return NextResponse.redirect(new URL("/", request.url));
+    } catch {
+      console.error("Failed to fetch/store account data after OAuth flow", {
+        user_id,
+      });
+      return NextResponse.redirect(
+        new URL("/?error=data_fetch_fail", request.url),
+      );
+    }
   } catch (error) {
     console.error("OAuth authorization error:", error);
     // Redirect with error parameter for user feedback

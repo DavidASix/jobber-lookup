@@ -4,7 +4,7 @@ import {
   type clientSchema,
   type invoicesSchema,
   type quotesSchema,
-} from "~/types/jobber";
+} from "~/lib/jobber/types";
 
 const quoteStatusMap: Record<
   z.infer<typeof quotesSchema>[number]["quoteStatus"],

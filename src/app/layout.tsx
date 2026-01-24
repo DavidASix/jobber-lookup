@@ -7,6 +7,7 @@ import { SessionProvider } from "next-auth/react";
 
 import { TRPCReactProvider } from "~/trpc/react";
 import { ThemeProvider } from "~/components/theme/theme-provider";
+import { Header } from "./_components/header";
 
 const geist = Geist({
   subsets: ["latin"],
@@ -28,7 +29,10 @@ export default function RootLayout({
           <TRPCReactProvider>
             <SessionProvider>
               <main className="flex h-screen w-screen flex-col items-center justify-center">
-                {children}
+                <Header />
+                <div className="flex w-full max-w-300 flex-1 flex-col items-center justify-center gap-8">
+                  {children}
+                </div>
               </main>
             </SessionProvider>
           </TRPCReactProvider>

@@ -1,9 +1,10 @@
 "use client";
 
 import { useSession } from "next-auth/react";
-import { MagicLinkForm } from "~/app/_components/magic-link-form";
-import { LoadingState } from "~/app/_components/loading-state";
-import { Header } from "~/app/_components/header";
+
+import { MagicLinkForm } from "./_components/magic-link-form";
+import { LoadingState } from "./_components/loading-state";
+import { Dashboard } from "./_dashboard/dashboard";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -14,28 +15,25 @@ export default function Home() {
 
   if (!session?.user) {
     return (
-      <div className="flex h-screen w-screen flex-col">
-        <Header showSignOut={false} />
-        <div className="flex flex-1 flex-col items-center justify-center gap-8">
-          <h1 className="text-foreground text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Jobber Quote
-            <br />
-            Lookup Tool
-          </h1>
-          <p className="text-muted-foreground max-w-md text-center text-xl">
-            Sign in to access your personalized dashboard
-          </p>
-          <MagicLinkForm />
-        </div>
-      </div>
+      <>
+        <h1 className="text-foreground text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
+          Jobber Quote
+          <br />
+          Lookup Tool
+        </h1>
+        <p className="text-muted-foreground max-w-md text-center text-xl">
+          Sign in to access your personalized dashboard
+        </p>
+        <MagicLinkForm />
+      </>
     );
   }
 
   return (
-    <div className="flex h-screen w-screen flex-col">
-      <Header showSignOut={true} />
-      <div className="flex flex-1 items-center justify-center">
-        <h3 className="text-foreground text-3xl font-semibold">example</h3>
+    <div className="flex w-full flex-1 flex-col items-center border-4 p-10">
+      <h1 className="text-6xl font-bold">Dashboard</h1>
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <Dashboard user={session.user} />
       </div>
     </div>
   );

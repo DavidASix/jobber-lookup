@@ -1,6 +1,9 @@
 export const urls = {
   graphql: "https://api.getjobber.com/api/graphql",
-  oauth: "https://api.getjobber.com/api/oauth/token",
+  oauth: {
+    authorize: "https://api.getjobber.com/api/oauth/authorize",
+    token: "https://api.getjobber.com/api/oauth/token",
+  },
 };
 
 /**

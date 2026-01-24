@@ -14,7 +14,6 @@ export const env = createEnv({
     MAILER_ADDRESS: z.string().email(),
     RESEND_API_KEY: z.string().optional(),
     DATABASE_URL: z.string().url(),
-    JOBBER_CLIENT_ID: z.string(),
     JOBBER_CLIENT_SECRET: z.string(),
     NODE_ENV: z
       .enum(["development", "test", "production"])
@@ -27,7 +26,11 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    // NEXT_PUBLIC_URL: z.string().url(),
+    NEXT_PUBLIC_JOBBER_CLIENT_ID: z.string(),
+    /**
+     * The URL of the project, including http, with no trailing slash, e.g. for links in emails.
+     */
+    NEXT_PUBLIC_PROJECT_URL: z.string().url(),
   },
 
   /**
@@ -39,8 +42,9 @@ export const env = createEnv({
     MAILER_ADDRESS: process.env.MAILER_ADDRESS,
     RESEND_API_KEY: process.env.RESEND_API_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
-    JOBBER_CLIENT_ID: process.env.JOBBER_CLIENT_ID,
+    NEXT_PUBLIC_JOBBER_CLIENT_ID: process.env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
     JOBBER_CLIENT_SECRET: process.env.JOBBER_CLIENT_SECRET,
+    NEXT_PUBLIC_PROJECT_URL: process.env.NEXT_PUBLIC_PROJECT_URL,
     NODE_ENV: process.env.NODE_ENV,
   },
   /**
