@@ -15,7 +15,7 @@ export default function Home() {
 
   if (!session?.user) {
     return (
-      <>
+      <div className="flex min-h-full flex-col items-center justify-center gap-8 border p-10">
         <h1 className="text-foreground text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
           Jobber Quote
           <br />
@@ -25,12 +25,12 @@ export default function Home() {
           Sign in to access your personalized dashboard
         </p>
         <MagicLinkForm />
-      </>
+      </div>
     );
   }
 
   return (
-    <div className="flex w-full flex-1 flex-col items-center border-4 p-10">
+    <div className="flex min-h-full flex-col items-center justify-center gap-8 border p-10">
       <h1 className="text-6xl font-bold">Dashboard</h1>
       <div className="flex flex-1 flex-col items-center justify-center">
         <Dashboard user={session.user} />
