@@ -30,7 +30,9 @@ export default function RootLayout({
             <SessionProvider>
               <main className="flex h-screen w-screen flex-col items-center justify-center">
                 <Header />
-                {children}
+                <div className="flex flex-1 w-full flex-col items-center justify-center gap-8 max-w-300">
+                  {children}
+                </div>
               </main>
             </SessionProvider>
           </TRPCReactProvider>
