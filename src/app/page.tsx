@@ -11,7 +11,7 @@ export default function Home() {
 
   if (status === "loading") {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-8 border-x p-10">
+      <div className="flex min-h-full flex-col items-center justify-center gap-8 border-x px-2 py-8 md:p-10">
         <LoadingState />
       </div>
     );
@@ -19,7 +19,7 @@ export default function Home() {
 
   if (!session?.user) {
     return (
-      <div className="flex min-h-full flex-col items-center justify-center gap-8 border-x p-10">
+      <div className="flex min-h-full flex-col items-center justify-center gap-8 border-x px-2 py-8 md:p-10">
         <h1 className="text-foreground text-center text-5xl font-extrabold tracking-tight sm:text-[5rem]">
           Jobber Quote
           <br />
@@ -34,7 +34,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-full flex-col gap-8 border-x p-10">
+    <div className="flex min-h-full flex-col gap-8 border-x px-2 py-8 md:p-10">
       <div className="flex flex-col gap-2 border-b pb-6">
         <h1 className="text-4xl font-bold">Dashboard</h1>
         <p className="text-muted-foreground text-sm">
