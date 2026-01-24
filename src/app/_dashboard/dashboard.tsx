@@ -35,7 +35,7 @@ const errorParamDetails: Record<string, string> = {
 };
 
 const defaultError =
-  "An error has occurred, pleased refresh and try again later.";
+  "An error has occurred, please refresh and try again later.";
 
 export function Dashboard({ user }: { user: Session["user"] }) {
   const [isAuthorizing, setIsAuthorizing] = useState(false);
