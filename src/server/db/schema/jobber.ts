@@ -21,7 +21,7 @@ export const authenticationState = pgTable("authentication_state", {
 
 export const jobberTokens = pgTable("jobber_tokens", {
   id: serial("id").primaryKey(),
-  access_token: text("access_token").notNull().unique(),
+  access_token: text("access_token").notNull(),
   refresh_token: text("refresh_token").notNull().unique(),
   user_id: text("user_id")
     .notNull()
