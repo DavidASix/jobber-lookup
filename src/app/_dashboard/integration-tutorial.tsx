@@ -99,7 +99,7 @@ export function IntegrationTutorial({ public_id }: { public_id: string }) {
         <h2 className="text-md font-semibold">Example Implementation</h2>
         <p>
           You can copy and paste this implementation into your website to enable
-          client invoice looks, our share it with your developer for
+          client invoice lookups, or share it with your developer for
           implementation.
         </p>
         <div className="relative">
