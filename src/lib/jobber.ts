@@ -248,7 +248,7 @@ export async function accountData(
   let signupName = account.signupName;
   signupName = signupName === "Empty" ? null : signupName;
 
-  // Insert or update account data in database
+  // Insert or update account data in database TODO: This should not update on public_id conflict, it should probably fail as the public id has already been claimed
   const [accountRecord] = await db
     .insert(jobberAccounts)
     .values({
@@ -260,7 +260,7 @@ export async function accountData(
       phone: account.phone,
     })
     .onConflictDoUpdate({
-      target: jobberAccounts.user_id,
+      target: jobberAccounts.public_id,
       set: {
         jobber_id: account.id,
         name: account.name,
