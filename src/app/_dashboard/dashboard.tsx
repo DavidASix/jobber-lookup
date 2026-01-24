@@ -8,6 +8,7 @@ import { useState } from "react";
 import { useSearchParams } from "next/navigation";
 import { SendEmailForm } from "./send-email-form";
 import { IntegrationTutorial } from "./integration-tutorial";
+import { toast } from "sonner";
 
 // TODO: add a danger button to clear all connected jobber accounts, and push user to jobber to do the same
 
@@ -41,7 +42,9 @@ export function Dashboard({ user }: { user: User }) {
   const handleAuthorize = async () => {
     if (isAuthorizing) return;
     if (!authUrl) {
-      // TODO: toast and give escape hatch
+      toast.error(
+        "Authorization URL not available. Please refresh and try again.",
+      );
     }
     setIsAuthorizing(true);
     // TODO: Probably we want to just "kill" this tab asking the user to refresh or close it after they click auth
