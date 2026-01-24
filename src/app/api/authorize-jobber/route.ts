@@ -83,6 +83,7 @@ export async function GET(request: NextRequest) {
         errorText,
       );
       return NextResponse.redirect(
+        // TODO: It'd be nice to centralize this error URL construction somewhere to have better handling of the displayed response message, and logging
         new URL("/?error=oauth_failed", request.url),
       );
     }
@@ -118,17 +119,35 @@ export async function GET(request: NextRequest) {
 
     console.log("OAuth tokens inserted into database");
 
-    const token = await getJobberAccessToken(user_id);
-
-    if (!token) {
-      throw new Error("Failed to get Jobber access token");
+    let token: string;
+    try {
+      const queriedToken = await getJobberAccessToken(user_id);
+      if (!queriedToken) {
+        throw new Error("Failed to retrieve access token after OAuth flow");
+      }
+      token = queriedToken;
+    } catch {
+      console.log("Failed to get access token for user after OAuth flow", {
+        user_id,
+      });
+      return NextResponse.redirect(
+        new URL("/?error=missing_token", request.url),
+      );
     }
 
-    // Fetch and store the account data, but do nothing with the return
-    await accountData(user_id, token);
-
-    // Success - redirect to home
-    return NextResponse.redirect(new URL("/", request.url));
+    try {
+      // Fetch and store the account data, but do nothing with the return
+      await accountData(user_id, token);
+      // Success - redirect to home
+      return NextResponse.redirect(new URL("/", request.url));
+    } catch {
+      console.error("Failed to fetch/store account data after OAuth flow", {
+        user_id,
+      });
+      return NextResponse.redirect(
+        new URL("/?error=data_fetch_fail", request.url),
+      );
+    }
   } catch (error) {
     console.error("OAuth authorization error:", error);
     // Redirect with error parameter for user feedback
