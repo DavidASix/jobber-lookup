@@ -22,7 +22,7 @@ export const jobberRouter = createTRPCRouter({
   /**
    * Stores a new random state associated with the current user and returns the full Jobber OAuth authorization URL.
    */
-  getAuthorizationUrl: protectedProcedure.query(async ({ ctx }) => {
+  getPublicAuthorizationUrl: protectedProcedure.query(async ({ ctx }) => {
     const { id: user_id } = ctx.session.user;
     const state = crypto.randomUUID();
     await db.insert(authenticationState).values({

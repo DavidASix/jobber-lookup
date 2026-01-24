@@ -12,7 +12,7 @@ export function Dashboard({ user }: { user: User }) {
   const { data: publicId, status: publicIdStatus } =
     api.jobber.getPublicId.useQuery();
 
-  const { data: authUrl } = api.jobber.getAuthorizationUrl.useQuery(undefined, {
+  const { data: authUrl } = api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
     enabled: publicId === null && !isAuthorizing,
   });
 
