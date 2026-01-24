@@ -32,7 +32,9 @@ export default function Home() {
   return (
     <div className="flex w-full flex-1 flex-col items-center border-4 p-10">
       <h1 className="text-6xl font-bold">Dashboard</h1>
-      <Dashboard user={session.user} />
+      <div className="flex flex-1 flex-col items-center justify-center">
+        <Dashboard user={session.user} />
+      </div>
     </div>
   );
 }
