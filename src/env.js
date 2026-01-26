@@ -12,7 +12,7 @@ export const env = createEnv({
         ? z.string()
         : z.string().optional(),
     MAILER_ADDRESS: z.string().email(),
-    RESEND_API_KEY: z.string().optional(),
+    AUTH_RESEND_KEY: z.string().optional(),
     DATABASE_URL: z.string().url(),
     JOBBER_CLIENT_SECRET: z.string(),
     NODE_ENV: z
@@ -40,7 +40,7 @@ export const env = createEnv({
   runtimeEnv: {
     AUTH_SECRET: process.env.AUTH_SECRET,
     MAILER_ADDRESS: process.env.MAILER_ADDRESS,
-    RESEND_API_KEY: process.env.RESEND_API_KEY,
+    AUTH_RESEND_KEY: process.env.AUTH_RESEND_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     NEXT_PUBLIC_JOBBER_CLIENT_ID: process.env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
     JOBBER_CLIENT_SECRET: process.env.JOBBER_CLIENT_SECRET,
