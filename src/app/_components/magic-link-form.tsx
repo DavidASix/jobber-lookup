@@ -27,7 +27,10 @@ export function MagicLinkForm() {
 
     startTransition(async () => {
       try {
-        const result = await signIn("email", {
+        const method =
+          process.env.NODE_ENV === "development" ? "email" : "resend";
+
+        const result = await signIn(method, {
           email,
           redirect: false,
           callbackUrl: "/",

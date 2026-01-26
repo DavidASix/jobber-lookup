@@ -71,6 +71,9 @@ export const authConfig = {
     sessionsTable: sessions,
     verificationTokensTable: verificationTokens,
   }),
+  pages: {
+    signIn: "/",
+  },
   callbacks: {
     session: ({ session, user }) => ({
       // TODO: emailVerified is in this user object, but doesn't appear in any types (other than the one
