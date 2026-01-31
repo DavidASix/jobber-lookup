@@ -98,6 +98,11 @@ export async function GET(request: NextRequest) {
     }
 
     const oauthData = parseResult.data;
+    let expiresAt: Date = new Date(oauthData.expires_at);
+    if (isNaN(expiresAt.getTime())) {
+      // Fallback: if expires_at is not a valid date, set it to 1 hour from now
+      expiresAt = new Date(Date.now() + 3600 * 1000);
+    }
 
     // Mark the state as used
     await db
@@ -110,7 +115,7 @@ export async function GET(request: NextRequest) {
     await db.insert(jobberTokens).values({
       access_token: oauthData.access_token,
       refresh_token: oauthData.refresh_token,
-      expires_at: new Date(oauthData.expires_at),
+      expires_at: expiresAt,
       user_id: user_id,
     });
 
