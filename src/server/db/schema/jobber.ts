@@ -40,6 +40,13 @@ export const jobberTokens = pgTable("jobber_tokens", {
 });
 
 /**
+ * Connection status for Jobber accounts.
+ * - connected: OAuth tokens are valid and working
+ * - disconnected: Token refresh failed, user needs to re-authorize
+ */
+export type JobberConnectionStatus = "connected" | "disconnected";
+
+/**
  * Fact table storing Jobber account information associated with each user. One entry per jobber public id.
  */
 export const jobberAccounts = pgTable("jobber_accounts", {
@@ -53,6 +60,11 @@ export const jobberAccounts = pgTable("jobber_accounts", {
   signup_name: text("signup_name"),
   industry: text("industry"),
   phone: text("phone"),
+  connection_status: text("connection_status")
+    .$type<JobberConnectionStatus>()
+    .notNull()
+    .default("disconnected"),
+  disconnected_at: timestamp("disconnected_at"),
 });
 
 export const authenticationStateRelations = relations(

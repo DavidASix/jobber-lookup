@@ -6,7 +6,7 @@ import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
 import { env } from "~/env";
 import { urls } from "~/lib/jobber/utils";
-import { accountData } from "~/lib/jobber/graphql";
+import { fetchAndStoreAccountData } from "~/lib/jobber/graphql";
 import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
 import { tokenResponseSchema } from "~/lib/jobber/types";
 
@@ -134,7 +134,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // Fetch and store the account data, but do nothing with the return
-      await accountData(user_id, token);
+      await fetchAndStoreAccountData(user_id, token);
       // Success - redirect to home
       return NextResponse.redirect(new URL("/", request.url));
     } catch {
