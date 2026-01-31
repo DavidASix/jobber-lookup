@@ -113,7 +113,8 @@ export async function getJobberAccessToken(
           eq(jobberTokens.user_id, user_id),
           eq(jobberTokens.refresh_token, tokenRecord.refresh_token),
         ),
-      );
+      )
+      .returning();
 
     // If no rows updated, another request already refreshed the token, re-fetch and return the current valid token
     if (result.length === 0) {
