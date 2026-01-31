@@ -1,4 +1,8 @@
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { authenticationState, jobberAccounts } from "~/server/db/schema/jobber";
 import { eq } from "drizzle-orm";
 import { db } from "~/server/db";
@@ -43,5 +47,21 @@ export const jobberRouter = createTRPCRouter({
     }).toString();
 
     return `${urls.oauth.authorize}?${queryString}`;
+  }),
+
+  /**
+   * Public endpoint that fetches all set-up Jobber account's statuses.
+   */
+  getAccountStatuses: publicProcedure.query(async () => {
+    const accounts = await db
+      .select({
+        name: jobberAccounts.name,
+        public_id: jobberAccounts.public_id,
+        connection_status: jobberAccounts.connection_status,
+        disconnected_at: jobberAccounts.disconnected_at,
+      })
+      .from(jobberAccounts);
+
+    return accounts;
   }),
 });
