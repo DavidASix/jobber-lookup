@@ -1,11 +1,31 @@
 import { eq, and } from "drizzle-orm";
 
 import { db } from "~/server/db";
-import { jobberTokens } from "~/server/db/schema/jobber";
+import { jobberTokens, jobberAccounts } from "~/server/db/schema/jobber";
 import { env } from "~/env";
 
 import { tokenResponseSchema } from "./types";
 import { urls } from "./utils";
+
+/**
+ * Updates the connection status for a user's Jobber account.
+ * Call this after successful authentication or when token refresh fails.
+ *
+ * @param user_id - The user ID to update
+ * @param status - "connected" or "disconnected"
+ */
+async function updateConnectionStatus(
+  user_id: string,
+  status: "connected" | "disconnected",
+) {
+  await db
+    .update(jobberAccounts)
+    .set({
+      connection_status: status,
+      disconnected_at: status === "disconnected" ? new Date() : null,
+    })
+    .where(eq(jobberAccounts.user_id, user_id));
+}
 
 /** Buffer time before expiration to trigger refresh (5 min) */
 const EXPIRATION_BUFFER_MS = 5 * 60 * 1000;
@@ -105,12 +125,18 @@ export async function getJobberAccessToken(
       console.error(
         "Token refresh race condition: updated token still expired",
       );
+      await updateConnectionStatus(user_id, "disconnected");
       return null;
     }
+
+    // Refresh succeeded - ensure connection status is "connected"
+    await updateConnectionStatus(user_id, "connected");
 
     return newTokens.access_token;
   } catch (error) {
     console.error("Error refreshing token:", error);
+    // Mark connection as broken so user can be notified
+    await updateConnectionStatus(user_id, "disconnected");
     return null;
   }
 }
