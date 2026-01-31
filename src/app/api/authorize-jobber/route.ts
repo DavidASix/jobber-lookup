@@ -8,16 +8,11 @@ import { env } from "~/env";
 import { urls } from "~/lib/jobber/utils";
 import { accountData } from "~/lib/jobber/graphql";
 import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
+import { tokenResponseSchema } from "~/lib/jobber/types";
 
 const authorizeSchema = z.object({
   code: z.string(),
   state: z.string(),
-});
-
-const oauthTokenSchema = z.object({
-  access_token: z.string(),
-  refresh_token: z.string(),
-  expires_at: z.string(), // Format: "2024-04-09 21:04:31 UTC"
 });
 
 /**
@@ -90,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     const oauthResponse: unknown = await oauthRequest.json();
-    const parseResult = oauthTokenSchema.safeParse(oauthResponse);
+    const parseResult = tokenResponseSchema.safeParse(oauthResponse);
 
     if (!parseResult.success) {
       console.error(
