@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { StatusIndicator } from "~/components/status-indicator";
 
 import { LoadingState } from "../_components/loading-state";
 import { SendEmailForm } from "./send-email-form";
@@ -205,6 +206,23 @@ export function Dashboard({ user }: { user: Session["user"] }) {
         </CardHeader>
         <CardContent>
           <SendEmailForm public_id={accountData.public_id} />
+        </CardContent>
+      </Card>
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Account Status</CardTitle>
+          <CardDescription>
+            Is your Jobber Lookup account connected?
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-4 py-4">
+          <div className="flex items-center gap-1">
+            <StatusIndicator status={accountData.connection_status} />{" "}
+            <span className="text-muted-foreground text-sm leading-tight font-medium uppercase">
+              {accountData.connection_status}
+            </span>
+          </div>
+
         </CardContent>
       </Card>
 
