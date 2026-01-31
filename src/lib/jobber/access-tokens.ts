@@ -7,8 +7,19 @@ import { env } from "~/env";
 import { tokenResponseSchema } from "./types";
 import { urls } from "./utils";
 
+/** Buffer time before expiration to trigger refresh (5 min) */
+const EXPIRATION_BUFFER_MS = 5 * 60 * 1000;
+
 /**
- * Gets a valid Jobber access token for a user, refreshing if necessary
+ * Checks if a token is expired or about to expire
+ */
+function isTokenExpired(expiresAt: Date): boolean {
+  const bufferTime = new Date(Date.now() + EXPIRATION_BUFFER_MS);
+  return expiresAt <= bufferTime;
+}
+
+/**
+ * Gets a valid Jobber access token for a user, refreshing only if expired
  *
  * @param user_id - The user ID to get the token for
  * @returns The access token, or null if unable to get one
@@ -29,7 +40,12 @@ export async function getJobberAccessToken(
     return null;
   }
 
-  // Try to refresh the token
+  // If token is still valid, return it without refreshing
+  if (!isTokenExpired(tokenRecord.expires_at)) {
+    return tokenRecord.access_token;
+  }
+
+  // Token is expired or about to expire, refresh it
   try {
     const refreshParams = new URLSearchParams({
       client_id: env.NEXT_PUBLIC_JOBBER_CLIENT_ID,
@@ -48,12 +64,14 @@ export async function getJobberAccessToken(
     }
 
     const data: unknown = await response.json();
-    const { access_token, refresh_token } = tokenResponseSchema.parse(data);
+    const { access_token, refresh_token, expires_at } =
+      tokenResponseSchema.parse(data);
 
     // Store the new tokens
     await db.insert(jobberTokens).values({
       access_token,
       refresh_token,
+      expires_at: new Date(expires_at),
       user_id,
     });
 

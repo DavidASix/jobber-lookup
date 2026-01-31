@@ -17,6 +17,7 @@ const authorizeSchema = z.object({
 const oauthTokenSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
+  expires_at: z.string(), // Format: "2024-04-09 21:04:31 UTC"
 });
 
 /**
@@ -114,6 +115,7 @@ export async function GET(request: NextRequest) {
     await db.insert(jobberTokens).values({
       access_token: oauthData.access_token,
       refresh_token: oauthData.refresh_token,
+      expires_at: new Date(oauthData.expires_at),
       user_id: user_id,
     });
 
