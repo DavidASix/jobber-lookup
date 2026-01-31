@@ -32,7 +32,7 @@ export const jobberTokens = pgTable("jobber_tokens", {
   id: serial("id").primaryKey(),
   access_token: text("access_token").notNull(),
   refresh_token: text("refresh_token").notNull().unique(),
-  expires_at: timestamp("expires_at").notNull(),
+  expires_at: timestamp("expires_at").notNull().defaultNow(),
   user_id: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
