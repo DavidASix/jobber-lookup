@@ -1,4 +1,4 @@
-import { eq, and } from "drizzle-orm";
+import { eq, and, desc } from "drizzle-orm";
 
 import { db } from "~/server/db";
 import { jobberTokens, jobberAccounts } from "~/server/db/schema/jobber";
@@ -46,6 +46,7 @@ async function getTokenRecord(user_id: string) {
     .select()
     .from(jobberTokens)
     .where(eq(jobberTokens.user_id, user_id))
+    .orderBy(desc(jobberTokens.expires_at))
     .limit(1);
   return tokenRecord;
 }
