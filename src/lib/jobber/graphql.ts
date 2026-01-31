@@ -204,7 +204,7 @@ export async function fetchQuotes(
 /**
  * Fetch account data from Jobber and save it to the database
  */
-export async function accountData(
+export async function fetchAndStoreAccountData(
   userId: string,
   token: string,
 ): Promise<{
@@ -258,6 +258,7 @@ export async function accountData(
       signup_name,
       industry: account.industry,
       phone: account.phone,
+      connection_status: "connected",
     })
     .onConflictDoUpdate({
       target: jobberAccounts.public_id,
@@ -267,6 +268,8 @@ export async function accountData(
         signup_name,
         industry: account.industry,
         phone: account.phone,
+        connection_status: "connected",
+        disconnected_at: null,
       },
     })
     .returning();

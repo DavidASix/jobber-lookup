@@ -68,6 +68,7 @@ export const accountResponseSchema = z.object({
 export const tokenResponseSchema = z.object({
   access_token: z.string(),
   refresh_token: z.string(),
+  expires_at: z.string(), // Format: "2024-04-09 21:04:31 UTC"
 });
 
 export type Client = z.infer<typeof clientSchema>["client"];

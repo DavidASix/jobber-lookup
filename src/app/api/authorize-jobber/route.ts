@@ -6,17 +6,13 @@ import { db } from "~/server/db";
 import { authenticationState, jobberTokens } from "~/server/db/schema/jobber";
 import { env } from "~/env";
 import { urls } from "~/lib/jobber/utils";
-import { accountData } from "~/lib/jobber/graphql";
+import { fetchAndStoreAccountData } from "~/lib/jobber/graphql";
 import { getJobberAccessToken } from "~/lib/jobber/access-tokens";
+import { tokenResponseSchema } from "~/lib/jobber/types";
 
 const authorizeSchema = z.object({
   code: z.string(),
   state: z.string(),
-});
-
-const oauthTokenSchema = z.object({
-  access_token: z.string(),
-  refresh_token: z.string(),
 });
 
 /**
@@ -89,7 +85,7 @@ export async function GET(request: NextRequest) {
     }
 
     const oauthResponse: unknown = await oauthRequest.json();
-    const parseResult = oauthTokenSchema.safeParse(oauthResponse);
+    const parseResult = tokenResponseSchema.safeParse(oauthResponse);
 
     if (!parseResult.success) {
       console.error(
@@ -102,6 +98,11 @@ export async function GET(request: NextRequest) {
     }
 
     const oauthData = parseResult.data;
+    let expiresAt: Date = new Date(oauthData.expires_at);
+    if (isNaN(expiresAt.getTime())) {
+      // Fallback: if expires_at is not a valid date, set it to 1 hour from now
+      expiresAt = new Date(Date.now() + 3600 * 1000);
+    }
 
     // Mark the state as used
     await db
@@ -114,6 +115,7 @@ export async function GET(request: NextRequest) {
     await db.insert(jobberTokens).values({
       access_token: oauthData.access_token,
       refresh_token: oauthData.refresh_token,
+      expires_at: expiresAt,
       user_id: user_id,
     });
 
@@ -137,7 +139,7 @@ export async function GET(request: NextRequest) {
 
     try {
       // Fetch and store the account data, but do nothing with the return
-      await accountData(user_id, token);
+      await fetchAndStoreAccountData(user_id, token);
       // Success - redirect to home
       return NextResponse.redirect(new URL("/", request.url));
     } catch {
