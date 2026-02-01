@@ -28,7 +28,7 @@ export function LookupStatsCard({ accountId }: { accountId?: number }) {
   }
 
   const { apiCalls, emailsSent } = data;
-  const successRate = apiCalls ? emailsSent / apiCalls : 1;
+  const successRate = apiCalls ? emailsSent / apiCalls : null;
 
   return (
     <dl className="grid gap-3">
@@ -52,7 +52,9 @@ export function LookupStatsCard({ accountId }: { accountId?: number }) {
         <dt className="text-muted-foreground text-xs font-medium">
           Success Rate
         </dt>
-        <dd className="text-foreground text-xs">{successRate}%</dd>
+        <dd className="text-foreground text-xs">
+          {successRate === null ? "N/A" : `${successRate}%`}
+        </dd>
       </div>
     </dl>
   );
