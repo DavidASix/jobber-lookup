@@ -43,6 +43,8 @@ export function SendEmailForm({ public_id }: { public_id: string }) {
 
       const parsedResponse = responseSchema.safeParse(responseContent);
 
+      console.log(parsedResponse);
+      
       await utils.jobber.getAccountData.invalidate();
       await utils.jobber.getAccountStatuses.invalidate();
       await utils.jobber.getLookupStats.invalidate();
