@@ -109,7 +109,7 @@ export async function getJobberAccessToken(
       .set({
         access_token: newTokens.access_token,
         refresh_token: newTokens.refresh_token,
-        expires_at: new Date(newTokens.expires_at),
+        expires_at: new Date(Date.now() + 3600 * 1000),
       })
       .where(
         and(
