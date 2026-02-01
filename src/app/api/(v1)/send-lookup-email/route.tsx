@@ -128,7 +128,7 @@ export async function GET(request: NextRequest) {
     });
 
     const { error } = await resend.emails.send({
-      from: `Jobber.Tools <${mailerAddress}>`,
+      from: `${account.name ?? "Jobber.Lookup"} <${mailerAddress}>`,
       to: [email],
       subject: `Your ${account.name ? `${account.name} ` : ""}quotes & invoices`,
       react: lookupEmail,
