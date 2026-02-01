@@ -6,6 +6,7 @@ import {
   text,
   serial,
   uuid,
+  unique,
 } from "drizzle-orm/pg-core";
 import { users } from "./auth";
 
@@ -47,25 +48,31 @@ export const jobberTokens = pgTable("jobber_tokens", {
 export type JobberConnectionStatus = "connected" | "disconnected";
 
 /**
- * Fact table storing Jobber account information associated with each user. One entry per jobber public id.
+ * Fact table storing Jobber account information associated with each user.
+ *
+ * @note that multiple users can have the same jobber account; and a single user can have multiple jobber accounts.
  */
-export const jobberAccounts = pgTable("jobber_accounts", {
-  id: serial("id").primaryKey(),
-  public_id: uuid("public_id").defaultRandom().unique().notNull(),
-  user_id: text("user_id")
-    .notNull()
-    .references(() => users.id, { onDelete: "cascade" }),
-  jobber_id: text("jobber_id").notNull(),
-  name: text("name"),
-  signup_name: text("signup_name"),
-  industry: text("industry"),
-  phone: text("phone"),
-  connection_status: text("connection_status")
-    .$type<JobberConnectionStatus>()
-    .notNull()
-    .default("disconnected"),
-  disconnected_at: timestamp("disconnected_at"),
-});
+export const jobberAccounts = pgTable(
+  "jobber_accounts",
+  {
+    id: serial("id").primaryKey(),
+    public_id: uuid("public_id").defaultRandom().unique().notNull(),
+    user_id: text("user_id")
+      .notNull()
+      .references(() => users.id, { onDelete: "cascade" }),
+    jobber_id: text("jobber_id").notNull(),
+    name: text("name"),
+    signup_name: text("signup_name"),
+    industry: text("industry"),
+    phone: text("phone"),
+    connection_status: text("connection_status")
+      .$type<JobberConnectionStatus>()
+      .notNull()
+      .default("disconnected"),
+    disconnected_at: timestamp("disconnected_at"),
+  },
+  (table) => [unique().on(table.user_id, table.jobber_id)],
+);
 
 export const authenticationStateRelations = relations(
   authenticationState,
