@@ -54,7 +54,7 @@ export function LookupStatsCard({ accountId }: { accountId?: number }) {
           Success Rate
         </dt>
         <dd className="text-foreground text-xs">
-          {successRate === null ? "N/A" : `${successRate}%`}
+          {successRate === null ? "N/A" : `${(successRate * 100).toFixed(0)}%`}
         </dd>
       </div>
     </dl>
