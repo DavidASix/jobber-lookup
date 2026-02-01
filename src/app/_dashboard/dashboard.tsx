@@ -16,6 +16,7 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Alert, AlertDescription, AlertTitle } from "~/components/ui/alert";
+import { StatusIndicator } from "~/components/status-indicator";
 
 import { LoadingState } from "../_components/loading-state";
 import { SendEmailForm } from "./send-email-form";
@@ -47,7 +48,7 @@ export function Dashboard({ user }: { user: Session["user"] }) {
 
   const { data: authUrl, status: authUrlStatus } =
     api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
-      enabled: accountData === null && !isAuthorizing,
+      enabled: accountData?.connection_status !== "connected" && !isAuthorizing,
     });
 
   const handleAuthorize = async () => {
@@ -205,6 +206,31 @@ export function Dashboard({ user }: { user: Session["user"] }) {
         </CardHeader>
         <CardContent>
           <SendEmailForm public_id={accountData.public_id} />
+        </CardContent>
+      </Card>
+      <Card className="col-span-1">
+        <CardHeader>
+          <CardTitle>Account Status</CardTitle>
+          <CardDescription>
+            Is your Jobber Lookup account connected?
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex h-full flex-col items-center justify-end gap-4">
+          <div className="flex flex-1 items-center gap-4">
+            <StatusIndicator status={accountData.connection_status} />{" "}
+            <span className="text-muted-foreground text-sm leading-tight font-medium uppercase">
+              {accountData.connection_status}
+            </span>
+          </div>
+
+          <Button
+            size="lg"
+            onClick={handleAuthorize}
+            disabled={!authUrl || accountData.connection_status === "connected"}
+            className="w-full"
+          >
+            Re-link your Jobber Account
+          </Button>
         </CardContent>
       </Card>
 
