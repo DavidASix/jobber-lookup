@@ -1,10 +1,13 @@
+import z from "zod";
+import { eq, and, count } from "drizzle-orm";
+
 import {
   createTRPCRouter,
   protectedProcedure,
   publicProcedure,
 } from "~/server/api/trpc";
 import { authenticationState, jobberAccounts } from "~/server/db/schema/jobber";
-import { eq } from "drizzle-orm";
+import { usageLogs } from "~/server/db/schema/logs";
 import { db } from "~/server/db";
 import { urls } from "~/lib/jobber/utils";
 import { env } from "~/env";
@@ -48,6 +51,49 @@ export const jobberRouter = createTRPCRouter({
 
     return `${urls.oauth.authorize}?${queryString}`;
   }),
+
+  /**
+   * Fetches lookup email statistics for the current user's Jobber account.
+   */
+  getLookupStats: protectedProcedure
+    .input(z.object({ accountId: z.number() }))
+    .query(async ({ ctx, input }) => {
+      const { id: user_id } = ctx.session.user;
+      const { accountId } = input;
+      const [apiCalls] = await db
+        .select({
+          count: count(),
+        })
+        .from(usageLogs)
+        .where(
+          and(
+            eq(usageLogs.user_id, user_id),
+            eq(usageLogs.jobber_account_id, accountId),
+            eq(usageLogs.log_type, "api_call"),
+            eq(usageLogs.route, "send-lookup-email"),
+          ),
+        )
+        .groupBy(usageLogs.jobber_account_id);
+      const [emailsSent] = await db
+        .select({
+          count: count(),
+        })
+        .from(usageLogs)
+        .where(
+          and(
+            eq(usageLogs.user_id, user_id),
+            eq(usageLogs.jobber_account_id, accountId),
+            eq(usageLogs.log_type, "email_sent"),
+            eq(usageLogs.route, "send-lookup-email"),
+          ),
+        )
+        .groupBy(usageLogs.jobber_account_id);
+
+      return {
+        apiCalls: apiCalls?.count ?? 0,
+        emailsSent: emailsSent?.count ?? 0,
+      };
+    }),
 
   /**
    * Public endpoint that fetches all set-up Jobber account's statuses.
