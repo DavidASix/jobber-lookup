@@ -72,8 +72,8 @@ export const jobberRouter = createTRPCRouter({
             eq(usageLogs.log_type, "api_call"),
             eq(usageLogs.route, "send-lookup-email"),
           ),
-        )
-        .groupBy(usageLogs.jobber_account_id);
+        );
+
       const [emailsSent] = await db
         .select({
           count: count(),
@@ -86,8 +86,7 @@ export const jobberRouter = createTRPCRouter({
             eq(usageLogs.log_type, "email_sent"),
             eq(usageLogs.route, "send-lookup-email"),
           ),
-        )
-        .groupBy(usageLogs.jobber_account_id);
+        );
 
       return {
         apiCalls: apiCalls?.count ?? 0,
