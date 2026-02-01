@@ -79,6 +79,15 @@ export async function GET(request: NextRequest) {
     // Get client by email
     const client = await findClientByEmail(email, token);
     if (!client) {
+      await logAction({
+        jobberAccountId: account.id,
+        userId: account.user_id,
+        logType: "no_client_found",
+        route: "send-lookup-email",
+        metadata: {
+          requestEmail: email,
+        },
+      });
       return NextResponse.json(
         { error: "Client not found" },
         { status: 404, headers: CORS_HEADERS },
