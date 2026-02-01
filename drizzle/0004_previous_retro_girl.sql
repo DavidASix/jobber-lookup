@@ -1,0 +1,1 @@
+ALTER TYPE "public"."log_type" ADD VALUE 'no_client_found';

@@ -21,7 +21,7 @@ export const metadata = z.object({
 
 export type Metadata = z.infer<typeof metadata>;
 
-export const logTypes = ["api_call", "email_sent"] as const;
+export const logTypes = ["api_call", "email_sent", "no_client_found"] as const;
 export const logTypeEnum = pgEnum("log_type", logTypes);
 
 /**
