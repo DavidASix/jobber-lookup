@@ -1,5 +1,7 @@
 "use client";
 
+import { api } from "~/trpc/react";
+
 import { useState, type FormEvent } from "react";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
@@ -11,6 +13,7 @@ type FormStatus = "idle" | "loading" | "success" | "error";
 export function SendEmailForm({ public_id }: { public_id: string }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
+  const utils = api.useUtils();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -28,6 +31,10 @@ export function SendEmailForm({ public_id }: { public_id: string }) {
       if (!response.ok) {
         throw new Error("Could not send email");
       }
+
+      await utils.jobber.getAccountData.invalidate();
+      await utils.jobber.getAccountStatuses.invalidate();
+      await utils.jobber.getLookupStats.invalidate();
 
       setStatus("success");
 
