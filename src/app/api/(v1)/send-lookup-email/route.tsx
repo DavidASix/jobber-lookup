@@ -89,7 +89,10 @@ export async function GET(request: NextRequest) {
         },
       });
       return NextResponse.json(
-        { success: false, message: "Client's email could not be found in Jobber." },
+        {
+          success: false,
+          message: "Client's email could not be found in Jobber.",
+        },
         { headers: CORS_HEADERS },
       );
     }
