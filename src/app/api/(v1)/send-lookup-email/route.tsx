@@ -89,8 +89,8 @@ export async function GET(request: NextRequest) {
         },
       });
       return NextResponse.json(
-        { error: "Client not found" },
-        { status: 404, headers: CORS_HEADERS },
+        { success: false, message: "Client's email could not be found in Jobber." },
+        { headers: CORS_HEADERS },
       );
     }
 
@@ -139,7 +139,7 @@ export async function GET(request: NextRequest) {
     }
 
     return NextResponse.json(
-      { message: "Email sent!" },
+      { success: true, message: "Email sent" },
       { headers: CORS_HEADERS },
     );
   } catch (error) {

@@ -7,12 +7,15 @@ import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import { Label } from "~/components/ui/label";
 import { Alert, AlertDescription } from "~/components/ui/alert";
+import z from "zod";
 
 type FormStatus = "idle" | "loading" | "success" | "error";
 
 export function SendEmailForm({ public_id }: { public_id: string }) {
   const [email, setEmail] = useState("");
   const [status, setStatus] = useState<FormStatus>("idle");
+  const [statusMessage, setStatusMessage] = useState<string | null>(null);
+
   const utils = api.useUtils();
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
@@ -32,24 +35,40 @@ export function SendEmailForm({ public_id }: { public_id: string }) {
         throw new Error("Could not send email");
       }
 
+      const responseContent: unknown = await response.json();
+      const responseSchema = z.object({
+        success: z.boolean(),
+        message: z.string(),
+      });
+
+      const parsedResponse = responseSchema.safeParse(responseContent);
+
       await utils.jobber.getAccountData.invalidate();
       await utils.jobber.getAccountStatuses.invalidate();
       await utils.jobber.getLookupStats.invalidate();
 
-      setStatus("success");
-
-      setTimeout(() => {
-        setStatus("idle");
-      }, 4500);
+      if (parsedResponse.success && parsedResponse.data.success === false) {
+        setStatus("error");
+        setStatusMessage(
+          parsedResponse.data.message ||
+            "The request succeeded, but there was a problem with the information provided.",
+        );
+      } else {
+        setStatus("success");
+        setStatusMessage(
+          "Email sent successfully! Your client should receive it shortly.",
+        );
+      }
     } catch (error) {
       console.error("Error:", error);
-
-      setTimeout(() => {
-        setStatus("error");
-      }, 500);
-
+      setStatusMessage(
+        "Could not send email. Please try again.\nContact developer if issue persists.",
+      );
+      setStatus("error");
+    } finally {
       setTimeout(() => {
         setStatus("idle");
+        setStatusMessage(null);
       }, 5000);
     }
   };
@@ -96,22 +115,13 @@ export function SendEmailForm({ public_id }: { public_id: string }) {
         {getButtonText()}
       </Button>
 
-      {status === "success" && (
-        <Alert>
+      {status === "success" || status === "error" ? (
+        <Alert variant={status === "error" ? "destructive" : "default"}>
           <AlertDescription>
-            Email sent successfully! Your client should receive it shortly.
+            {statusMessage ?? "Request Completed"}
           </AlertDescription>
         </Alert>
-      )}
-
-      {status === "error" && (
-        <Alert variant="destructive">
-          <AlertDescription>
-            Could not send email. Please check the email address and try again.
-            Contact developer if issue persists.
-          </AlertDescription>
-        </Alert>
-      )}
+      ) : null}
     </form>
   );
 }
