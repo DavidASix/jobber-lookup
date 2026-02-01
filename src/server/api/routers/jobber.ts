@@ -1,5 +1,5 @@
 import z from "zod";
-import { eq, and, count } from "drizzle-orm";
+import { eq, and, count, or } from "drizzle-orm";
 
 import {
   createTRPCRouter,
@@ -83,7 +83,10 @@ export const jobberRouter = createTRPCRouter({
           and(
             eq(usageLogs.user_id, user_id),
             eq(usageLogs.jobber_account_id, accountId),
-            eq(usageLogs.log_type, "email_sent"),
+            or(
+              eq(usageLogs.log_type, "email_sent"),
+              eq(usageLogs.log_type, "no_client_found"),
+            ),
             eq(usageLogs.route, "send-lookup-email"),
           ),
         );
