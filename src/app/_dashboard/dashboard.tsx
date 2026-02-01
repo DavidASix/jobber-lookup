@@ -21,8 +21,7 @@ import { StatusIndicator } from "~/components/status-indicator";
 import { LoadingState } from "../_components/loading-state";
 import { SendEmailForm } from "./send-email-form";
 import { IntegrationTutorial } from "./integration-tutorial";
-
-// TODO: add a danger button to clear all connected jobber accounts, and push user to jobber to do the same
+import { LookupStatsCard } from "./lookup-stats-card";
 
 const errorParamDetails: Record<string, string> = {
   oauth_failed:
@@ -234,9 +233,15 @@ export function Dashboard({ user }: { user: Session["user"] }) {
         </CardContent>
       </Card>
 
-      {/* <div>
-        TODO: Social links for
-      </div> */}
+      <Card className="col-span-2">
+        <CardHeader>
+          <CardTitle>Lookup Statistics</CardTitle>
+          <CardDescription>Email lookup request metrics</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <LookupStatsCard accountId={accountData.id} />
+        </CardContent>
+      </Card>
 
       <Card className="col-span-1 lg:col-span-2">
         <CardHeader>

@@ -13,6 +13,7 @@ import {
   fetchQuotes,
 } from "~/lib/jobber/graphql";
 import { LookupEmail } from "~/lib/emails/lookup-email";
+import { logAction } from "~/lib/logs";
 
 const emailLookupSchema = z.object({
   id: z.string(),
@@ -56,6 +57,16 @@ export async function GET(request: NextRequest) {
       );
     }
 
+    await logAction({
+      jobberAccountId: account.id,
+      userId: account.user_id,
+      logType: "api_call",
+      route: "send-lookup-email",
+      metadata: {
+        requestEmail: email,
+      },
+    });
+
     // Get a refreshed access token
     const token = await getJobberAccessToken(account.user_id);
     if (!token) {
@@ -80,7 +91,18 @@ export async function GET(request: NextRequest) {
       fetchQuotes(client.id, token),
     ]);
 
-    console.log({ client, invoices, quotes });
+    await logAction({
+      jobberAccountId: account.id,
+      userId: account.user_id,
+      logType: "email_sent",
+      route: "send-lookup-email",
+      metadata: {
+        clientId: client.id,
+        requestEmail: email,
+        invoiceCount: invoices.length,
+        quoteCount: quotes.length,
+      },
+    });
 
     const resend = new Resend(env.RESEND_API_KEY);
 
