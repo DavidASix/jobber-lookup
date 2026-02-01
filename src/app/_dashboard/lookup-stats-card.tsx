@@ -20,11 +20,12 @@ export function LookupStatsCard({ accountId }: { accountId?: number }) {
     );
   }
 
-  if (!data) {
-    return <div>Fetching stats...</div>;
-  }
   if (status === "error") {
     return <div>Failed to load stats.</div>;
+  }
+
+  if (status === "pending") {
+    return <div>Fetching stats...</div>;
   }
 
   const { apiCalls, emailsSent } = data;
