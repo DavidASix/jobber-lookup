@@ -62,6 +62,8 @@ async function refreshTokensWithJobber(refresh_token: string) {
     refresh_token,
   });
 
+  console.log("Refreshing with token:", refresh_token);
+
   const response = await fetch(`${urls.oauth.token}?${refreshParams}`, {
     method: "POST",
   });
