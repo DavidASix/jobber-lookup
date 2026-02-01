@@ -1,4 +1,5 @@
 import {
+  integer,
   jsonb,
   pgEnum,
   pgTable,
@@ -39,7 +40,7 @@ export const usageLogs = pgTable("usage_logs", {
   user_id: text("user_id")
     .notNull()
     .references(() => users.id, { onDelete: "cascade" }),
-  jobber_account_id: serial("jobber_account_id").references(
+  jobber_account_id: integer("jobber_account_id").references(
     () => jobberAccounts.id,
     { onDelete: "cascade" },
   ),
