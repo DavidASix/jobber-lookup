@@ -48,7 +48,7 @@ export function Dashboard({ user }: { user: Session["user"] }) {
 
   const { data: authUrl, status: authUrlStatus } =
     api.jobber.getPublicAuthorizationUrl.useQuery(undefined, {
-      enabled: accountData === null && !isAuthorizing,
+      enabled: accountData?.connection_status !== "connected" && !isAuthorizing,
     });
 
   const handleAuthorize = async () => {
@@ -215,14 +215,22 @@ export function Dashboard({ user }: { user: Session["user"] }) {
             Is your Jobber Lookup account connected?
           </CardDescription>
         </CardHeader>
-        <CardContent className="flex flex-col gap-4 py-4">
-          <div className="flex items-center gap-1">
+        <CardContent className="flex h-full flex-col items-center justify-end gap-4">
+          <div className="flex flex-1 items-center gap-4">
             <StatusIndicator status={accountData.connection_status} />{" "}
             <span className="text-muted-foreground text-sm leading-tight font-medium uppercase">
               {accountData.connection_status}
             </span>
           </div>
 
+          <Button
+            size="lg"
+            onClick={handleAuthorize}
+            disabled={!authUrl || accountData.connection_status === "connected"}
+            className="w-full"
+          >
+            Re-link your Jobber Account
+          </Button>
         </CardContent>
       </Card>
 
